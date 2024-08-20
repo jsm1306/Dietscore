@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Hi {{name}}, Age: {{age}}</h2>
+
+
+<form id="inputForm" method="post" action="{% url 'compute' %}">
+    {% csrf_token %}
+    <div id="inputContainer">
+        <div class="input-group">
+            <h3>Enter Your Food Items:</h3>
+            <label>Item:</label>
+            <input type="text" name="item[]"> <!--taking all items in a list-->
+            <label>Quantity (g):</label>
+            <input type="number" name="quantity[]">
+            <span class="add-button" onclick="addInput()">&#43;</span>
+        </div>
+    </div>
+    <button type="submit">Submit</button>
+</form>
+
+<script>
+    function addInput() {
+        const newInputGroup = document.createElement('div');
+        newInputGroup.classList.add('input-group');
+        newInputGroup.innerHTML = `
+            <label>Item:</label>
+            <input type="text" name="item[]">
+            <label>Quantity (g):</label>
+            <input type="text" name="quantity[]">
+            <span class="add-button" onclick="addInput()">&#43;</span>
+        `;
+        document.getElementById('inputContainer').appendChild(newInputGroup);
+    }
+</script>
+
+<style>
+    .input-group {
+        margin-bottom: 10px;
+    }
+    .add-button {
+        cursor: pointer;
+        color: rgb(255, 0, 0);
+        margin-left: 10px;
+        font-size: 24px;
+    }
+</style>
+
+{% endblock %}

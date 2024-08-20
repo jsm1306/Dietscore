@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+    {% if error %}
+        <p style="color: red;">{{ error }}</p><br>
+        <a href="{% url 'bmicalc' %}"><button type="button" class="btn btn-success">BMI</button></a>
+    {% else %}
+        <h1>BMI Result</h1>
+        <p>BMI: {{ result }}</p>
+        <p>Age: {{ age }}</p>
+        <p>Gender: {{ gender }}</p>
+    {% endif %}
+{% endblock %}
+
+
+

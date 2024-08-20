@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- <h1>This is {{ result }} page</h1> -->
+
+<form action="{% url 'bmicalc' %}" method="post">
+    {% csrf_token %}
+    Weight:<br><input type="number" name="weig"><br>
+    Height:<br><input type="number" name="heig"><br>
+    Age:<br><input type="number" name="age"><br>
+    <label for="options">Gender:</label><br>
+    <select id="options" name="options">
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+    </select>
+    <br><br>
+    <input type="submit">
+</form>
+{% endblock %}

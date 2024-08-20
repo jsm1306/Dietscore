@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Nutrition Intake Summary</h2>
+<table bgcolor="black">
+    <thead>
+        <tr bgcolor="grey">
+            <th>Item</th>
+            <th>Quantity (g)</th>
+            <th>Calories (Kcal)</th>
+            <th>Proteins (g)</th>
+            <th>Fats (g)</th>
+            <th>Sodium (mg)</th>
+            <th>Fiber (g)</th>
+            <th>Carbs (g)</th>
+            <th>Sugar (g)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item, quantity, item_info in item_details %}
+        <tr bgcolor="lightgrey">
+            <td>{{ item }}</td>
+            <td>{{ quantity }}</td>
+            <td>{{ item_info.Calories }}</td>
+            <td>{{ item_info.Proteins }}</td>
+            <td>{{ item_info.Fats }}</td>
+            <td>{{ item_info.Sodium }}</td>
+            <td>{{ item_info.Fiber }}</td>
+            <td>{{ item_info.Carbs }}</td>
+            <td>{{ item_info.Sugar }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr bgcolor="silver">
+            <th>Total</th>
+            <th></th>
+            <th>{{ totals.Calories }}</th>
+            <th>{{ totals.Proteins }}</th>
+            <th>{{ totals.Fats }}</th>
+            <th>{{ totals.Sodium }}</th>
+            <th>{{ totals.Fiber }}</th>
+            <th>{{ totals.Carbs }}</th>
+            <th>{{ totals.Sugar }}</th>
+        </tr>
+        <tr bgcolor="silver">
+            <th>Minimum</th>
+            <th></th>
+            <th>{{ requirement.Calories }}</th>
+            <th>{{ requirement.Proteins }}</th>
+            <th>{{ requirement.Fats }}</th>
+            <th>{{ requirement.Sodium }}</th>
+            <th>{{ requirement.Fiber }}</th>
+            <th>{{ requirement.Carbs }}</th>
+            <th>{{ requirement.Sugar }}</th>
+        </tr>
+        <tr bgcolor="silver">
+            <th>Requirement met?</th>
+            <th></th>
+            <th>{{ meets_requirements.Calories }}</th>
+            <th>{{ meets_requirements.Proteins }}</th>
+            <th>{{ meets_requirements.Fats }}</th>
+            <th>{{ meets_requirements.Sodium }}</th>
+            <th>{{ meets_requirements.Fiber }}</th>
+            <th>{{ meets_requirements.Carbs }}</th>
+            <th>{{ meets_requirements.Sugar }}</th>
+        </tr>
+    </tfoot>
+</table><br>
+<a href="{% url 'score' %}">Go Back</a>
+{% endblock %}
