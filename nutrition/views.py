@@ -10,8 +10,11 @@ def mains(request):
 def add(request):
     name=str(request.POST['name'])
     age=int(request.POST['age'])
-    # user_profile = UserProfile.objects.create(name=name, age=age)
-    return render(request,'score.html',{'age':age,'name':name})
+    gender = request.POST.get('options', '')
+    request.session['age'] = age
+    request.session['gender'] = gender
+    user_profile = UserProfile.objects.create(name=name, age=age,gender=gender)
+    return render(request,'score.html',{'age':age,'name':name,'gender':gender})
 
 def bmicalc(request):
     if request.method == "POST":
@@ -26,23 +29,51 @@ def bmicalc(request):
 
         ht=height/100
         val3=weight/(ht**2)
-        BMICalculation.objects.create(weight=weight,height=height,bmi_value=val3,gender=gender)
+        
+        if val3 < 18.5:
+            res="Underweight"
+        elif 18.5 <= val3 < 24.9:
+            res="Normal weight"
+        elif 25 <= val3 < 29.9:
+            res="Overweight"
+        elif 30 <= val3 < 34.9:
+            res="Obesity Class 1"
+        elif 35 <= val3 < 39.9:
+            res="Obesity Class 2"
+        elif val3 >= 40:
+            res="Obesity Class 3"
+        else:
+            res="Invalid BMI"
 
-        return render(request, 'bmiresult.html', {'result': round(val3), 'age': age, 'gender': gender})
+        BMICalculation.objects.create(weight=weight,height=height,bmi_value=val3,gender=gender,category=res)
+
+        return render(request, 'bmiresult.html', {'result': round(val3), 'age': age, 'gender': gender, 'category':res})
     return render(request, 'bmical.html')
 
 import csv
-
-DAILY_REQUIREMENTS = {
-    'Calories': 2000,   
-    'Proteins': 50,    
-    'Fats': 70,         
-    'Sodium': 2300,     
-    'Fiber': 25,  
-    'Carbs': 260,        
-    'Sugar': 50,        
-}
-
+def daily(request):
+    age = request.session.get('age')
+    gender = request.session.get('gender')
+#gender:age:nutrition
+    DAILY_REQUIREMENTS = {
+        'Female': {
+            (4, 8):  {'Calories': 1200, 'Proteins': 19, 'Fats': 70, 'Sodium': 2300, 'Fiber': 25, 'Carbs': 260, 'Sugar': 50},
+            (9, 13): {'Calories': 1600, 'Proteins': 34, 'Fats': 70, 'Sodium': 2300, 'Fiber': 26, 'Carbs': 290, 'Sugar': 50},
+            (14, 18): {'Calories': 1800, 'Proteins': 46, 'Fats': 70, 'Sodium': 2300, 'Fiber': 26, 'Carbs': 300, 'Sugar': 50},
+            (19, 30): {'Calories': 2000, 'Proteins': 46, 'Fats': 70, 'Sodium': 2300, 'Fiber': 28, 'Carbs': 310, 'Sugar': 50},
+        },
+        'Male': {
+            (4, 8):  {'Calories': 1400, 'Proteins': 19, 'Fats': 70, 'Sodium': 2300, 'Fiber': 25, 'Carbs': 270, 'Sugar': 50},
+            (9, 13): {'Calories': 1800, 'Proteins': 34, 'Fats': 70, 'Sodium': 2300, 'Fiber': 31, 'Carbs': 300, 'Sugar': 50},
+            (14, 18): {'Calories': 2200, 'Proteins': 52, 'Fats': 70, 'Sodium': 2300, 'Fiber': 31, 'Carbs': 320, 'Sugar': 50},
+            (19, 30): {'Calories': 2400, 'Proteins': 56, 'Fats': 70, 'Sodium': 2300, 'Fiber': 34, 'Carbs': 330, 'Sugar': 50},
+        }
+    }
+    for age_range, requirements in DAILY_REQUIREMENTS.get(gender, {}).items():
+        if age_range[0] <= age <= age_range[1]:
+            return requirements
+    
+    return {}  
 def load_nutrition_data():
     nutrition_data = {}
     nutition_items= NutritionInfo.objects.all()
@@ -65,7 +96,7 @@ def compute(request):
         quantities = request.POST.getlist('quantity[]')
 
         nutrition_data = load_nutrition_data()
-
+        requirements=daily(request)
         totals = {'Calories': 0, 'Proteins': 0, 'Fats': 0, 'Sodium': 0, 'Fiber': 0, 'Carbs': 0, 'Sugar': 0}
         item_details = []
 
@@ -95,17 +126,15 @@ def compute(request):
             except ValueError:
                 print("error")
 
-        meets_requirements = {key: totals[key] >= DAILY_REQUIREMENTS[key] for key in totals}
+        meets_requirements = {key: totals[key] >= requirements[key] for key in totals}
 
         context = {
             'item_details': item_details,
             'totals': totals,
             'meets_requirements': meets_requirements,
-            'requirement': DAILY_REQUIREMENTS
+            'requirement': requirements
         }
-
         return render(request, 'inputsbase.html', context)
-
     return render(request, 'score.html')
 
 

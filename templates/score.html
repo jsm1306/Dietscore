@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Hi {{name}}, Age: {{age}}</h2>
+<h2>Hi {{name}}, Age: {{age}}<br> Gender: {{gender}}</h2>
 
 
 <form id="inputForm" method="post" action="{% url 'compute' %}">

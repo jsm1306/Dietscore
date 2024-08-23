@@ -8,6 +8,12 @@
     {% csrf_token %}
     Name:<br><input type="text" name="name"><br>
     Age:<br><input type="text" name="age"><br><br>
+    <label for="options">Gender:</label><br>
+    <select id="options" name="options">
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+    </select>
+    <br><br>
     <button type="submit">Login</button>
   </form>
    

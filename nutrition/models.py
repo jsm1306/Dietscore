@@ -5,7 +5,8 @@ from django.db import models
 class UserProfile(models.Model):
     name = models.CharField(max_length=100)
     age = models.IntegerField()
-    
+    gender = models.CharField(max_length=10) 
+ 
 
     def __str__(self):
         return self.name
@@ -15,6 +16,7 @@ class BMICalculation(models.Model):
     height = models.FloatField()
     bmi_value = models.FloatField()
     gender = models.CharField(max_length=10)
+    category = models.CharField(max_length=100,default=0)
     calculated_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
