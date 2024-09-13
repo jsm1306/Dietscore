@@ -1,16 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
-
-    <h1>Category Wise Food Items</h1>
-    {% for category, items in items_by_category.items %}
-        <h2>{{ category }}</h2>
-        <ul>
-            {% for item in items %}
-                <li>{{ item.item_name }} - {{ item.calories }} calories</li>
-            {% empty %}
-                <li>No items available in this category.</li>
-            {% endfor %}
-        </ul>
-    {% endfor %}
+<h1>Category Wise Food Items</h1>
+{% for category, items in items_by_category.items %}
+    <h2>{{ category }}</h2>
+    <ul>
+        {% for item in items %}
+            <li>{{ item.item_name }} - {{ item.calories }} calories</li>
+        {% empty %}
+            <li>No items available in this category.</li>
+        {% endfor %}
+    </ul>
+{% endfor %}
 
 {% endblock %}

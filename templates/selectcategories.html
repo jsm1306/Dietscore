@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Please select choices:</h2>
+<h2>Select choices:</h2>
 
 <form id="inputForm" method="post" action="{% url 'suggester' %}">
     {% csrf_token %}
@@ -8,7 +8,6 @@
         {% for category, items in items_by_category.items %}
         <div class="category-group">
             <h2>{{ category }}</h2>
-            <!-- First Dropdown and Quantity Input -->
             <div class="input-group">
                 <label>Item 1:</label>
                 <select name="item_{{ category }}[]" required>
@@ -18,9 +17,7 @@
                     {% endfor %}
                 </select>
             </div>
-
-            <!-- Second Dropdown and Quantity Input -->
-            <div class="input-group">
+        <div class="input-group">
                 <label>Item 2:</label>
                 <select name="item_{{ category }}[]" required>
                     <option value="">Select an item</option>

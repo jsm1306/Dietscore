@@ -3,11 +3,11 @@ import requests
 from django.conf import settings
 from .models import UserProfile, BMICalculation, UserSubmission, ItemEntry, NutritionInfo, Category
 
-def mains(request):
+def mains(request):#dummy
     return render(request,'mains.html',{'result':'Diet Score'})
 
 
-def category_wise_items(request):
+def category_wise_items(request):#for category.html
     categories = Category.objects.all()
     items_by_category = {category.name: NutritionInfo.objects.filter(category=category) for category in categories}
     
@@ -16,17 +16,15 @@ def category_wise_items(request):
     }
     return render(request, 'categorylist.html', context)
 
-def add(request):
-    if request.method == 'POST':
-        name = str(request.POST['name'])
-        age = int(request.POST['age'])
+def add(request):#inputs display fn
+    if request.method=='POST':
+        name=str(request.POST['name'])
+        age=int(request.POST['age'])
         gender = request.POST.get('options', '')
         request.session['name'] = name
         request.session['age'] = age
         request.session['gender'] = gender
-        
         UserProfile.objects.create(name=name, age=age, gender=gender)
-
         nutrition_items = NutritionInfo.objects.values_list('item_name', flat=True)
         # categories = Category.objects.all()  
         
@@ -39,13 +37,12 @@ def add(request):
         })
     return render(request, 'mains.html') 
 def categorize(request):
-    
+    #include packet for chips, quantity number for tiffin!!!!
     items_by_category = {}
     categories = Category.objects.all()  
     for category in categories:
         items = NutritionInfo.objects.filter(category=category)  
         items_by_category[category.name] = items 
-
     context = {
         'items_by_category': items_by_category
     }
@@ -54,41 +51,38 @@ def suggester(request):
     if request.method == 'POST':
         items_by_category = {}
         categories = Category.objects.all()
-
         for category in categories:
             items = request.POST.getlist(f'item_{category.name}[]')
             items_by_category[category.name] = zip(items)
-
         context = {
             'items_by_category': items_by_category
         }
         return render(request, 'suggestresult.html', context)
 
-def score(request):
+def score(request):#back button fn
     name = request.session.get('name')  
     age = request.session.get('age')     
     nutrition_items = NutritionInfo.objects.values_list('item_name', flat=True)
-
     return render(request, 'score.html', {
         'name': name,
         'age': age,
         'nutrition_items': nutrition_items,
     })
 
-def bmicalc(request):
+def bmicalc(request):#bmi calculator
     if request.method == "POST":
         weight = int(request.POST.get('weig', 0))
         height = int(request.POST.get('heig', 0))
         age = int(request.POST.get('age', 0))
         gender = request.POST.get('options', '')
-
-        if height == 0:
-            error_message = "Height cannot be zero. Please enter a valid height."
-            return render(request, 'bmiresult.html', {'error': error_message, 'age': age, 'gender': gender})
-
-        ht = height / 100
-        val3 = weight / (ht ** 2)
-        
+        if height==0:
+            errormsg="Height cannot be zero. Please enter valid height."
+            return render(request, 'bmiresult.html', {'error': errormsg, 'age': age, 'gender': gender})
+        if age<=0 or age >=100:
+            errormsg="Invalid age."
+            return render(request, 'bmiresult.html', {'error': errormsg, 'age': age, 'gender': gender})
+        ht = height/100
+        val3 = weight/(ht**2)
         if val3 < 18.5:
             res = "Underweight"
         elif 18.5 <= val3 < 24.9:
@@ -103,18 +97,13 @@ def bmicalc(request):
             res = "Obesity Class 3"
         else:
             res = "Invalid BMI"
-
         BMICalculation.objects.create(weight=weight, height=height, bmi_value=val3, gender=gender, category=res)
-
         return render(request, 'bmiresult.html', {'result': round(val3), 'age': age, 'gender': gender, 'category': res})
     return render(request, 'bmical.html')
 
-def daily(request):
+def daily(request):#use in compute
     age = request.session.get('age')
     gender = request.session.get('gender')
-
-    print(f"Calculating requirements for Age: {age}, Gender: {gender}")
-
     DAILY_REQUIREMENTS = {
         'Female': {
             (4, 8):  {'Calories': 1200, 'Proteins': 19, 'Fats': 70, 'Sodium': 2300, 'Fiber': 25, 'Carbs': 260, 'Sugar': 50},
@@ -139,14 +128,11 @@ def daily(request):
         if age_range[0] <= age <= age_range[1]:
             print(f"Requirements found: {requirements}")
             return requirements
-
-    print("No matching requirements found")
     return {}  
 
 def load_nutrition_data():
     nutrition_data = {}
     nutition_items = NutritionInfo.objects.all()
-    
     for item in nutition_items:
         nutrition_data[item.item_name.lower()] = {
             'Calories': item.calories,
@@ -159,23 +145,19 @@ def load_nutrition_data():
         }
     return nutrition_data
 
-def compute(request):
+def compute(request):#**** fn, to calculate req met or not, sum divide and compare
     if request.method == 'POST':
         items = request.POST.getlist('item[]')
         quantities = request.POST.getlist('quantity[]')
-
         nutrition_data = load_nutrition_data()
         requirements = daily(request)
 
         if not requirements:
-            print("Requirements not found, setting defaults.")
+            print("Error1-not found")
             requirements = {'Calories': 0, 'Proteins': 0, 'Fats': 0, 'Sodium': 0, 'Fiber': 0, 'Carbs': 0, 'Sugar': 0}
-
         totals = {'Calories': 0, 'Proteins': 0, 'Fats': 0, 'Sodium': 0, 'Fiber': 0, 'Carbs': 0, 'Sugar': 0}
         item_details = []
-
         submission = UserSubmission.objects.create()
-
         for item, quantity in zip(items, quantities):
             item = item.lower().strip()
             try:
@@ -186,30 +168,27 @@ def compute(request):
                         totals[key] += (item_info[key] * quantity / 100)
                         totals[key] = round(totals[key], 2)
                     item_details.append((item, quantity, item_info))
-
-                    ItemEntry.objects.create(
+                    ItemEntry.objects.create(#to edit items entered by user in database
                         submission=submission,
                         item_name=item,
                         quantity=quantity,
-                        calories=item_info['Calories'] * quantity / 100,
-                        proteins=item_info['Proteins'] * quantity / 100,
-                        fats=item_info['Fats'] * quantity / 100,
-                        sodium=item_info['Sodium'] * quantity / 100,
-                        fiber=item_info['Fiber'] * quantity / 100,
-                        carbs=item_info['Carbs'] * quantity / 100,
-                        sugar=item_info['Sugar'] * quantity / 100
+                        calories=item_info['Calories']*quantity/100,
+                        proteins=item_info['Proteins']*quantity/100,
+                        fats=item_info['Fats']*quantity/100,
+                        sodium=item_info['Sodium']*quantity/100,
+                        fiber=item_info['Fiber']*quantity/100,
+                        carbs=item_info['Carbs']*quantity/100,
+                        sugar=item_info['Sugar']*quantity/100
                     )
             except ValueError:
-                print(f"Error processing item: {item}, quantity: {quantity}")
-
+                print("Error2-cant fetch")#print in console
         meets_requirements = {key: totals[key] >= requirements[key] for key in totals}
-
         context = {
             'item_details': item_details,
             'totals': totals,
             'meets_requirements': meets_requirements,
             'requirement': requirements
         }
-        return render(request, 'inputsbase.html', context)
+        return render(request,'inputsbase.html',context)
 
-    return render(request, 'score.html')
+    return render(request,'score.html')
