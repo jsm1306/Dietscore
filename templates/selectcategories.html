@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Please select choices:</h2>
+
+<form id="inputForm" method="post" action="{% url 'suggester' %}">
+    {% csrf_token %}
+    <div id="inputContainer">
+        {% for category, items in items_by_category.items %}
+        <div class="category-group">
+            <h2>{{ category }}</h2>
+            <!-- First Dropdown and Quantity Input -->
+            <div class="input-group">
+                <label>Item 1:</label>
+                <select name="item_{{ category }}[]" required>
+                    <option value="">Select an item</option>
+                    {% for item in items %}
+                    <option value="{{ item.item_name }}">{{ item.item_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Second Dropdown and Quantity Input -->
+            <div class="input-group">
+                <label>Item 2:</label>
+                <select name="item_{{ category }}[]" required>
+                    <option value="">Select an item</option>
+                    {% for item in items %}
+                    <option value="{{ item.item_name }}">{{ item.item_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <button type="submit">Submit</button>
+</form>
+
+<style>
+    .input-group {
+        margin-bottom: 10px;
+        display: flex;
+        flex-direction: column;
+    }
+    .category-group {
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}

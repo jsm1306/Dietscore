@@ -4,6 +4,8 @@ import django.db.models.deletion
 from django.db import migrations, models
 
 
+
+
 class Migration(migrations.Migration):
 
     initial = True
@@ -17,6 +19,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('item_name', models.CharField(max_length=100, unique=True)),
+                # ('category', models.ForeignKey('nutrition.category', related_name='items', on_delete=models.SET_NULL, null=True, blank=True)),
                 ('calories', models.FloatField()),
                 ('proteins', models.FloatField()),
                 ('fats', models.FloatField()),
@@ -56,11 +59,18 @@ class Migration(migrations.Migration):
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='nutrition.userprofile')),
             ],
         ),
+        # migrations.CreateModel(
+        #     name='Category',
+        #     fields=[
+        #         ('name', models.CharField(max_length=100, unique=True))
+        #     ],
+        # ),
         migrations.CreateModel(
             name='ItemEntry',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('item_name', models.CharField(max_length=100)),
+                # ('category', models.ForeignKey('nutrition.category', related_name='items', on_delete=models.SET_NULL, null=True, blank=True)),
                 ('quantity', models.FloatField()),
                 ('calories', models.FloatField()),
                 ('proteins', models.FloatField()),

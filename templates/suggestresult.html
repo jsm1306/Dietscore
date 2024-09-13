@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Selected Items</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Category</th>
+            <th>Items</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for category, items in items_by_category.items %}
+            <tr>
+                <td>{{ category }}</td>
+                <td>
+                    {% for item in items %}
+                        {{ item }} {% if not forloop.last %} {% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

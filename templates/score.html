@@ -1,17 +1,23 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Hi {{name}}, Age: {{age}}<br> Gender: {{gender}}</h2>
+<h2>Welcome {{ name }}, Age: {{ age }}</h2>
 
-
+<h3>Select Food Items:</h3>
 <form id="inputForm" method="post" action="{% url 'compute' %}">
     {% csrf_token %}
     <div id="inputContainer">
         <div class="input-group">
-            <h3>Enter Your Food Items:</h3>
             <label>Item:</label>
-            <input type="text" name="item[]"> <!--taking all items in a list-->
+            <select name="item[]" required>
+                <option value="">Select an item</option>
+                {% for item in nutrition_items %}
+                <option value="{{ item }}">{{ item }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="input-group">
             <label>Quantity (g):</label>
-            <input type="number" name="quantity[]">
+            <input type="number" name="quantity[]" required>
             <span class="add-button" onclick="addInput()">&#43;</span>
         </div>
     </div>
@@ -24,9 +30,14 @@
         newInputGroup.classList.add('input-group');
         newInputGroup.innerHTML = `
             <label>Item:</label>
-            <input type="text" name="item[]">
+            <select name="item[]" required>
+                <option value="">Select an item</option>
+                {% for item in nutrition_items %}
+                <option value="{{ item }}">{{ item }}</option>
+                {% endfor %}
+            </select>
             <label>Quantity (g):</label>
-            <input type="text" name="quantity[]">
+            <input type="number" name="quantity[]" required>
             <span class="add-button" onclick="addInput()">&#43;</span>
         `;
         document.getElementById('inputContainer').appendChild(newInputGroup);
@@ -36,13 +47,14 @@
 <style>
     .input-group {
         margin-bottom: 10px;
+        display: flex;
+        flex-direction: column; 
     }
     .add-button {
         cursor: pointer;
         color: rgb(255, 0, 0);
-        margin-left: 10px;
+        margin-top: 10px;
         font-size: 24px;
     }
 </style>
-
 {% endblock %}
