@@ -1,13 +1,13 @@
 from django.shortcuts import render, redirect
 import requests
 from django.conf import settings
-from .models import UserProfile, BMICalculation, UserSubmission, ItemEntry, NutritionInfo, Category
+from .models import *
 
 def mains(request):#dummy
     return render(request,'mains.html',{'result':'Diet Score'})
 
 
-def category_wise_items(request):#for category.html
+def category_wise_items(request):#to display categories in category.html(navbar)
     categories = Category.objects.all()
     items_by_category = {category.name: NutritionInfo.objects.filter(category=category) for category in categories}
     
@@ -36,8 +36,7 @@ def add(request):#inputs display fn
             # 'categories': categories  
         })
     return render(request, 'mains.html') 
-def categorize(request):
-    #include packet for chips, quantity number for tiffin!!!!
+def categorize(request):#to display items category wise
     items_by_category = {}
     categories = Category.objects.all()  
     for category in categories:
@@ -47,7 +46,7 @@ def categorize(request):
         'items_by_category': items_by_category
     }
     return render(request, 'selectcategories.html', context)
-def suggester(request):
+def suggester(request):#To print selected categories food items
     if request.method == 'POST':
         items_by_category = {}
         categories = Category.objects.all()
@@ -59,7 +58,7 @@ def suggester(request):
         }
         return render(request, 'suggestresult.html', context)
 
-def score(request):#back button fn
+def score(request):#back button fn in inputsbase.html
     name = request.session.get('name')  
     age = request.session.get('age')     
     nutrition_items = NutritionInfo.objects.values_list('item_name', flat=True)
@@ -75,10 +74,10 @@ def bmicalc(request):#bmi calculator
         height = int(request.POST.get('heig', 0))
         age = int(request.POST.get('age', 0))
         gender = request.POST.get('options', '')
-        if height==0:
-            errormsg="Height cannot be zero. Please enter valid height."
+        if height==0 or weight==0:
+            errormsg="Height/Weight cannot be zero. Please enter valid height."
             return render(request, 'bmiresult.html', {'error': errormsg, 'age': age, 'gender': gender})
-        if age<=0 or age >=100:
+        if age<0 or age >100:
             errormsg="Invalid age."
             return render(request, 'bmiresult.html', {'error': errormsg, 'age': age, 'gender': gender})
         ht = height/100
@@ -101,7 +100,7 @@ def bmicalc(request):#bmi calculator
         return render(request, 'bmiresult.html', {'result': round(val3), 'age': age, 'gender': gender, 'category': res})
     return render(request, 'bmical.html')
 
-def daily(request):#use in compute
+def daily(request):#this fn is to determine the min requirements based on age&gender, use in compute fn
     age = request.session.get('age')
     gender = request.session.get('gender')
     DAILY_REQUIREMENTS = {
@@ -126,11 +125,10 @@ def daily(request):#use in compute
     }
     for age_range, requirements in DAILY_REQUIREMENTS.get(gender, {}).items():
         if age_range[0] <= age <= age_range[1]:
-            print(f"Requirements found: {requirements}")
             return requirements
     return {}  
 
-def load_nutrition_data():
+def load_nutrition_data():# this fn is to load the nutrition data of items and use in compute fn
     nutrition_data = {}
     nutition_items = NutritionInfo.objects.all()
     for item in nutition_items:
@@ -182,6 +180,7 @@ def compute(request):#**** fn, to calculate req met or not, sum divide and compa
                     )
             except ValueError:
                 print("Error2-cant fetch")#print in console
+         #comparing calculated nutrition with min req
         meets_requirements = {key: totals[key] >= requirements[key] for key in totals}
         context = {
             'item_details': item_details,
@@ -192,3 +191,9 @@ def compute(request):#**** fn, to calculate req met or not, sum divide and compa
         return render(request,'inputsbase.html',context)
 
     return render(request,'score.html')
+'''
+Changes to be made: 
+1. Include Cost database
+2. Linear Programming for optimizing
+3. Qunatity measures to be added: in (g), in packet, in millilitres, number(in tiffin)
+'''
