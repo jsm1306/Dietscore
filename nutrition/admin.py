@@ -8,3 +8,5 @@ admin.site.register(UserSubmission)
 admin.site.register(ItemEntry)
 admin.site.register(NutritionInfo)
 admin.site.register(Category)
+
+

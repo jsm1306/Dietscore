@@ -45,6 +45,8 @@ class NutritionInfo(models.Model):
     carbs = models.FloatField()
     sugar = models.FloatField(default=0)
     category = models.ForeignKey(Category, related_name='nutrition_items', on_delete=models.CASCADE, null=True)
+    price = models.FloatField(default=0)
+
     def __str__(self):
         return self.item_name
 

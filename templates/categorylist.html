@@ -5,7 +5,7 @@
     <h2>{{ category }}</h2>
     <ul>
         {% for item in items %}
-            <li>{{ item.item_name }} - {{ item.calories }} calories</li>
+            <li>{{ item.item_name }} - {{ item.price }} price</li>
         {% empty %}
             <li>No items available in this category.</li>
         {% endfor %}
