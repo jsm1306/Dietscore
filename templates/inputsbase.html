@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>Nutrition Intake Summary</h2>
+
 <table bgcolor="black">
     <thead>
         <tr bgcolor="grey">
@@ -56,16 +57,39 @@
         <tr bgcolor="silver">
             <th>Requirement met?</th>
             <th></th>
-            <th>{{ meets_requirements.Calories }}</th>
-            <th>{{ meets_requirements.Proteins }}</th>
-            <th>{{ meets_requirements.Fats }}</th>
-            <th>{{ meets_requirements.Sodium }}</th>
-            <th>{{ meets_requirements.Fiber }}</th>
-            <th>{{ meets_requirements.Carbs }}</th>
-            <th>{{ meets_requirements.Sugar }}</th>
+            <th class="{% if meets_requirements.Calories %}green{% else %}red{% endif %}">
+                {% if meets_requirements.Calories %}Yes{% else %}No{% endif %}
+            </th>
+            <th class="{% if meets_requirements.Proteins %}green{% else %}red{% endif %}">
+                {% if meets_requirements.Proteins %}Yes{% else %}No{% endif %}
+            </th>
+            <th class="{% if meets_requirements.Fats %}green{% else %}red{% endif %}">
+                {% if meets_requirements.Fats %}Yes{% else %}No{% endif %}
+            </th>
+            <th class="{% if meets_requirements.Sodium %}green{% else %}red{% endif %}">
+                {% if meets_requirements.Sodium %}Yes{% else %}No{% endif %}
+            </th>
+            <th class="{% if meets_requirements.Fiber %}green{% else %}red{% endif %}">
+                {% if meets_requirements.Fiber %}Yes{% else %}No{% endif %}
+            </th>
+            <th class="{% if meets_requirements.Carbs %}green{% else %}red{% endif %}">
+                {% if meets_requirements.Carbs %}Yes{% else %}No{% endif %}
+            </th>
+            <th class="{% if meets_requirements.Sugar %}green{% else %}red{% endif %}">
+                {% if meets_requirements.Sugar %}Yes{% else %}No{% endif %}
+            </th>
         </tr>
+        
+        
+        
+        
     </tfoot>
-</table><br>
+</table>
+<br>
+
+
+<br>
 <a href="{% url 'score' %}">Go Back</a>
 <a href="{% url 'categorize' %}">Go Front</a>
+
 {% endblock %}

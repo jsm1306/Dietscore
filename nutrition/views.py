@@ -2,6 +2,11 @@ from django.shortcuts import render, redirect
 import requests
 from django.conf import settings
 from .models import *
+from scipy.optimize import linprog
+import numpy as np
+import matplotlib.pyplot as plt
+import io
+import urllib, base64
 
 def mains(request):#dummy
     return render(request,'mains.html',{'result':'Diet Score'})
@@ -46,17 +51,48 @@ def categorize(request):#to display items category wise
         'items_by_category': items_by_category
     }
     return render(request, 'selectcategories.html', context)
-def suggester(request):#To print selected categories food items
-    if request.method == 'POST':
-        items_by_category = {}
-        categories = Category.objects.all()
-        for category in categories:
-            items = request.POST.getlist(f'item_{category.name}[]')
-            items_by_category[category.name] = zip(items)
-        context = {
-            'items_by_category': items_by_category
-        }
-        return render(request, 'suggestresult.html', context)
+
+
+def suggester(request):
+    if request.method == "POST":
+        selected_items = []
+        for category, items in request.POST.items():
+            if category.startswith('item_'):
+                selected_items.append(items)  
+        
+        nutrition_data = []
+        for item_name in selected_items:
+            item = NutritionInfo.objects.get(item_name=item_name)
+            nutrition_data.append(item)
+            print(f"Item: {item.item_name}, Calories: {item.calories}, Proteins: {item.proteins}, Fats: {item.fats}, Sodium: {item.sodium},Fiber: {item.fiber},Carbs: {item.carbs},Sugar: {item.sugar},Price: {item.price}")
+
+        requirements = daily(request)
+        
+        calories = [-item.calories for item in nutrition_data]
+        proteins = [-item.proteins for item in nutrition_data]
+        fats = [-item.fats for item in nutrition_data]
+        sodium = [-item.sodium for item in nutrition_data]
+        fiber = [-item.fiber for item in nutrition_data]
+        carbs = [-item.carbs for item in nutrition_data]
+        sugar = [-item.sugar for item in nutrition_data]
+        
+        c = [item.price for item in nutrition_data]
+        
+        A = [calories, proteins, fats,sodium,fiber,carbs,sugar]
+        
+        b = [-requirements['Calories'], -requirements['Proteins'], -requirements['Fats'],
+            -requirements['Sodium'], -requirements['Fiber'], -requirements['Carbs'] , -requirements['Sugar']   ]
+
+        x_bounds = [(0, None) for _ in selected_items] 
+        res = linprog(c, A_ub=A, b_ub=b, bounds=x_bounds, options={"disp": True})
+        
+        quantities = res.x  
+        
+        results = [(item.item_name, quantity) for item, quantity in zip(nutrition_data, quantities)]
+        
+        return render(request, 'suggestresult.html', {'results': results})
+    
+    return redirect('mains.html')
 
 def score(request):#back button fn in inputsbase.html
     name = request.session.get('name')  
@@ -143,6 +179,42 @@ def load_nutrition_data():# this fn is to load the nutrition data of items and u
         }
     return nutrition_data
 
+
+# def viewgraphs(request):
+#     requirements = daily(request)
+#     totals = request.session.get('totals')   
+
+#     labels = ['Calories', 'Proteins', 'Fats', 'Sodium', 'Fiber', 'Carbs', 'Sugar']
+#     total = totals
+#     min_values = requirements
+    
+#     perce = []
+#     for i in range(len(total)):
+#         if total[i] > min_values[i]:
+#             perce.append(0)
+#         else:
+#             perce.append(min_values[i] - total[i])
+    
+#     colors = ['gold', 'yellowgreen', 'lightcoral', 'lightskyblue', 'thistle', 'bisque']
+    
+#     # Save the plot to a bytes buffer
+#     buf = io.BytesIO()
+#     plt.savefig(buf, format='png')
+#     buf.seek(0)
+
+#     # Close the plot
+#     plt.close()
+    
+#     return render(request, 'inputsbase.html', {
+#         'item_details': item_details,
+#         'totals': totals,
+#         'meets_requirements': meets_requirements,
+#         'requirement': requirements,
+#         'labels': json.dumps(labels),  # Convert to JSON
+#         'deficiencies': json.dumps(perce)  # Convert to JSON
+#     })
+
+  
 def compute(request):#**** fn, to calculate req met or not, sum divide and compare
     if request.method == 'POST':
         items = request.POST.getlist('item[]')
@@ -182,6 +254,7 @@ def compute(request):#**** fn, to calculate req met or not, sum divide and compa
                 print("Error2-cant fetch")#print in console
          #comparing calculated nutrition with min req
         meets_requirements = {key: totals[key] >= requirements[key] for key in totals}
+        request.session['totals'] = totals
         context = {
             'item_details': item_details,
             'totals': totals,

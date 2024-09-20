@@ -1,24 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Selected Items</h2>
-<table>
-    <thead>
-        <tr>
-            <th>Category</th>
-            <th>Items</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for category,items in items_by_category.items %}
-            <tr>
-                <td>{{ category }}</td>
-                <td>
-                    {% for item in items %}
-                        {{ item }} {% if not forloop.last %} {% endif %}
-                    {% endfor %}
-                </td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <h2>Quantities recommended for intake</h2>
+Item Quantity (in grams)<br><br>
+            
+            {% for item, quantity in results %}
+            
+                {{ item }} - {{ quantity|floatformat:2 }}<br>
+            
+            {% endfor %}
+        
+    
 {% endblock %}

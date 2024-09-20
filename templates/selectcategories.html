@@ -17,16 +17,7 @@
                     {% endfor %}
                 </select>
             </div>
-        <div class="input-group">
-                <label>Item 2:</label>
-                <select name="item_{{ category }}[]" required>
-                    <option value="">Select an item</option>
-                    {% for item in items %}
-                    <option value="{{ item.item_name }}">{{ item.item_name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
+       
         {% endfor %}
     </div>
     <button type="submit">Submit</button>

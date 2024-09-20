@@ -10,4 +10,6 @@ urlpatterns=[
     # path('dropdown/', views.dropdown, name='dropdown'),
     path('categorize/', views.categorize, name='categorize'),
     path('suggester/', views.suggester, name='suggester'),
+    # path('chart/', views.viewgraphs, name='viewgraphs'),
+
 ]
