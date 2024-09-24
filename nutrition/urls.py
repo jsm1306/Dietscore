@@ -11,5 +11,11 @@ urlpatterns=[
     path('categorize/', views.categorize, name='categorize'),
     path('suggester/', views.suggester, name='suggester'),
     # path('chart/', views.viewgraphs, name='viewgraphs'),
+    # path('categoryback',views.categoriesbackbtn, name='categoryback'),
+    path('categorize/', views.categorize, name='categorize'),
+    path('register/',views.registerPage,name='register'),
+    path('login/',views.loginPage,name='login'),
+    path('logout/',views.logoutPage,name='logout'),
+
 
 ]

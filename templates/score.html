@@ -1,10 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Welcome {{ name }}, Age: {{ age }}</h2>
+<h2>Welcome {{ name }}!</h2>
 
-<h3>Select Food Items:</h3>
+<h3>Welcome to our website!<br>
+    <h4>Please check your Diet Score by inputing the items and quantity you have consumed in a day!</h4>
+
+</h3>
 <form id="inputForm" method="post" action="{% url 'compute' %}">
     {% csrf_token %}
+    <h1>Select Food Items:</h1>
     <div id="inputContainer">
         <div class="input-group">
             <label>Item:</label>
@@ -51,12 +55,16 @@
         margin-bottom: 10px;
         display: flex;
         flex-direction: column; 
+        padding: 0px 0px;
     }
     .add-button {
         cursor: pointer;
-        color: rgb(255, 0, 0);
-        margin-top: 10px;
+        color: rgb(255, 255, 255);
+        margin-top: 0px;
         font-size: 24px;
     }
+
+
+
 </style>
 {% endblock %}

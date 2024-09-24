@@ -7,11 +7,51 @@ import numpy as np
 import matplotlib.pyplot as plt
 import io
 import urllib, base64
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 
+
+def registerPage(request):
+        form=UserCreationForm()
+        if request.method=="POST":
+            form=UserCreationForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect('login')
+            else:
+                messages.error(request,"Password does not follow the rules")
+        context={'form':form}
+        return render(request, 'register.html', context)
+def loginPage(request):
+    if request.user.is_authenticated:
+        return redirect('mains')
+    else:
+        if request.method=='POST':
+            username=request.POST.get('username')
+            password=request.POST.get('password')
+            print(username, password)
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('mains')
+            else:
+                messages.success(request,"Username or Password is incorrect")
+    return render(request,'login.html')
+
+
+@login_required(login_url='login')
+def logoutPage(request):
+    logout(request)
+    return redirect('login')
+
+
+@login_required(login_url='login')
 def mains(request):#dummy
     return render(request,'mains.html',{'result':'Diet Score'})
 
-
+@login_required(login_url='login')
 def category_wise_items(request):#to display categories in category.html(navbar)
     categories = Category.objects.all()
     items_by_category = {category.name: NutritionInfo.objects.filter(category=category) for category in categories}
@@ -20,7 +60,7 @@ def category_wise_items(request):#to display categories in category.html(navbar)
         'items_by_category': items_by_category
     }
     return render(request, 'categorylist.html', context)
-
+@login_required(login_url='login')
 def add(request):#inputs display fn
     if request.method=='POST':
         name=str(request.POST['name'])
@@ -41,6 +81,8 @@ def add(request):#inputs display fn
             # 'categories': categories  
         })
     return render(request, 'mains.html') 
+
+@login_required(login_url='login')
 def categorize(request):#to display items category wise
     items_by_category = {}
     categories = Category.objects.all()  
@@ -52,7 +94,7 @@ def categorize(request):#to display items category wise
     }
     return render(request, 'selectcategories.html', context)
 
-
+@login_required(login_url='login')
 def suggester(request):
     if request.method == "POST":
         selected_items = []
@@ -94,6 +136,7 @@ def suggester(request):
     
     return redirect('mains.html')
 
+@login_required(login_url='login')
 def score(request):#back button fn in inputsbase.html
     name = request.session.get('name')  
     age = request.session.get('age')     
@@ -103,7 +146,7 @@ def score(request):#back button fn in inputsbase.html
         'age': age,
         'nutrition_items': nutrition_items,
     })
-
+@login_required(login_url='login')
 def bmicalc(request):#bmi calculator
     if request.method == "POST":
         weight = int(request.POST.get('weig', 0))
@@ -120,13 +163,13 @@ def bmicalc(request):#bmi calculator
         val3 = weight/(ht**2)
         if val3 < 18.5:
             res = "Underweight"
-        elif 18.5 <= val3 < 24.9:
+        elif 18.5 <= val3 < 25:
             res = "Normal weight"
-        elif 25 <= val3 < 29.9:
+        elif 25 <= val3 <= 29.9:
             res = "Overweight"
-        elif 30 <= val3 < 34.9:
+        elif 30 <= val3 <= 34.9:
             res = "Obesity Class 1"
-        elif 35 <= val3 < 39.9:
+        elif 35 <= val3 <= 39.9:
             res = "Obesity Class 2"
         elif val3 >= 40:
             res = "Obesity Class 3"
@@ -135,7 +178,7 @@ def bmicalc(request):#bmi calculator
         BMICalculation.objects.create(weight=weight, height=height, bmi_value=val3, gender=gender, category=res)
         return render(request, 'bmiresult.html', {'result': round(val3), 'age': age, 'gender': gender, 'category': res})
     return render(request, 'bmical.html')
-
+@login_required(login_url='login')
 def daily(request):#this fn is to determine the min requirements based on age&gender, use in compute fn
     age = request.session.get('age')
     gender = request.session.get('gender')
@@ -180,41 +223,6 @@ def load_nutrition_data():# this fn is to load the nutrition data of items and u
     return nutrition_data
 
 
-# def viewgraphs(request):
-#     requirements = daily(request)
-#     totals = request.session.get('totals')   
-
-#     labels = ['Calories', 'Proteins', 'Fats', 'Sodium', 'Fiber', 'Carbs', 'Sugar']
-#     total = totals
-#     min_values = requirements
-    
-#     perce = []
-#     for i in range(len(total)):
-#         if total[i] > min_values[i]:
-#             perce.append(0)
-#         else:
-#             perce.append(min_values[i] - total[i])
-    
-#     colors = ['gold', 'yellowgreen', 'lightcoral', 'lightskyblue', 'thistle', 'bisque']
-    
-#     # Save the plot to a bytes buffer
-#     buf = io.BytesIO()
-#     plt.savefig(buf, format='png')
-#     buf.seek(0)
-
-#     # Close the plot
-#     plt.close()
-    
-#     return render(request, 'inputsbase.html', {
-#         'item_details': item_details,
-#         'totals': totals,
-#         'meets_requirements': meets_requirements,
-#         'requirement': requirements,
-#         'labels': json.dumps(labels),  # Convert to JSON
-#         'deficiencies': json.dumps(perce)  # Convert to JSON
-#     })
-
-  
 def compute(request):#**** fn, to calculate req met or not, sum divide and compare
     if request.method == 'POST':
         items = request.POST.getlist('item[]')
@@ -266,7 +274,12 @@ def compute(request):#**** fn, to calculate req met or not, sum divide and compa
     return render(request,'score.html')
 '''
 Changes to be made: 
-1. Include Cost database
-2. Linear Programming for optimizing
-3. Qunatity measures to be added: in (g), in packet, in millilitres, number(in tiffin)
+● Qunatity measures to be added: in (g), in packet, in millilitres, number(in tiffin)
+● Check calories
+● Sweets combine in main course
+● Include 3/4 items in main course while selecting for recommendation 
+● Add images to items
+● Quantity measure from number to grams
+● YES in green NO in red
+● Dietscore logo
 '''

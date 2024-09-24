@@ -1,20 +1,48 @@
 {% extends "base.html" %}
 <h1> This is {{result}} page</h1>
+{% load static %}
 {% block content %}
   
   <form action="add" method="post">
-    <h2>Login</h2><br>
     {% csrf_token %}
-    Name:<br><input type="text" name="name"><br>
-    Age:<br><input type="text" name="age"><br><br>
-    <label for="options">Gender:</label><br>
-    <select id="options" name="options">
+    <div class="login-container">
+      <div class="Login">
+          <form>
+            <h1> Enter Your Details:</h1>
+            <label>Name</label>
+            <input type="text" name="name"><br>
+            <label>Age</label><br>
+            <input type="number" name="age" >
+            <label for="options">Gender:</label><br>
+            <select id="options" name="options"><br>
         <option value="Male">Male</option>
-        <option value="Female">Female</option>
-    </select>
-    <br><br>
-    <button type="submit">Login</button>
-  </form>
-   
+        <option value="Female">Female</option><br>
+           </select><br>
+           <div class="button-container">
+            <button>Submit</button>
+          </div>
+            </form>
+          </form>
+        </div>
+      </div>
+    </form>
+  <style>
+   .login {
+       border: 1px solid black;
+       width:400px;
+       height: 400px;
+       background: url("{% static 'buildings.jpg' %}");
+       color: white;
+       border-radius: 20px;
+       box-shadow: 0px 0px 20px rgba(0,0,0,0.75);
+       background-size: cover;
+       background-position: center;
+       overflow: hidden;
+   }
+
+
+ </style>
+ <a href="{% url 'logout' %}"><button type="button" class="btn btn-success">Logout</button></a>
+
 {% endblock %}
 
