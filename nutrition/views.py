@@ -98,40 +98,47 @@ def suggester(request):
         for category, items in request.POST.items():
             if category.startswith('item_'):
                 selected_items.append(items)  
-        
+
         nutrition_data = []
         for item_name in selected_items:
-            item = NutritionInfo.objects.get(item_name=item_name)
-            nutrition_data.append(item)
-            print(f"Item: {item.item_name}, Calories: {item.calories}, Proteins: {item.proteins}, Fats: {item.fats}, Sodium: {item.sodium},Fiber: {item.fiber},Carbs: {item.carbs},Sugar: {item.sugar},Price: {item.price}")
+            try:
+                item = NutritionInfo.objects.get(item_name=item_name)
+                nutrition_data.append(item)
+            except NutritionInfo.DoesNotExist:
+                print(f"Item '{item_name}' does not exist in the database.")
 
+        # Ensure that the requirements function is defined and works
         requirements = daily(request)
-        
-        calories = [-item.calories for item in nutrition_data]
-        proteins = [-item.proteins for item in nutrition_data]
-        fats = [-item.fats for item in nutrition_data]
-        sodium = [-item.sodium for item in nutrition_data]
-        fiber = [-item.fiber for item in nutrition_data]
-        carbs = [-item.carbs for item in nutrition_data]
-        sugar = [-item.sugar for item in nutrition_data]
-        
-        c = [item.price for item in nutrition_data]
-        
-        A = [calories, proteins, fats,sodium,fiber,carbs,sugar]
-        
-        b = [-requirements['Calories'], -requirements['Proteins'], -requirements['Fats'],
-            -requirements['Sodium'], -requirements['Fiber'], -requirements['Carbs'] , -requirements['Sugar']   ]
 
-        x_bounds = [(0, None) for _ in selected_items] 
+        # Set up arrays for the linear programming
+        A = [
+            [-item.calories for item in nutrition_data],
+            [-item.proteins for item in nutrition_data],
+            [-item.fats for item in nutrition_data],
+            [-item.sodium for item in nutrition_data],
+            [-item.fiber for item in nutrition_data],
+            [-item.carbs for item in nutrition_data],
+            [-item.sugar for item in nutrition_data]
+        ]
+
+        b = [-requirements['Calories'], -requirements['Proteins'], -requirements['Fats'],
+             -requirements['Sodium'], -requirements['Fiber'], -requirements['Carbs'], -requirements['Sugar']]
+
+        c = [item.price for item in nutrition_data]
+        x_bounds = [(0, None) for _ in nutrition_data]
+
+        # Perform linear programming
         res = linprog(c, A_ub=A, b_ub=b, bounds=x_bounds, options={"disp": True})
-        
+
         quantities = res.x  
-        
-        results = [(item.item_name, quantity) for item, quantity in zip(nutrition_data, quantities)]
-        
+
+        # Prepare results with NutritionInfo instances and calculated quantities
+        results = [(item, quantity) for item, quantity in zip(nutrition_data, quantities)]
+
         return render(request, 'suggestresult.html', {'results': results})
-    
+
     return redirect('mains.html')
+
 
 @login_required(login_url='login')
 def score(request):#back button fn in inputsbase.html
@@ -280,3 +287,14 @@ Changes to be made:
 ● YES in green NO in red
 ● Dietscore logo
 '''
+def suggester_view(request):
+    if request.method == 'POST':
+        selected_items = []
+        for category in request.POST:
+            if category.startswith('item_'):
+                selected_item_name = request.POST[category]
+                if selected_item_name:
+                    item = NutritionInfo.objects.get(item_name=selected_item_name)
+                    selected_items.append(item)
+
+        return render(request, 'suggestresult.html', {'results': selected_items})

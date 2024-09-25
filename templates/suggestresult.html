@@ -1,40 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
     <h2>Quantities recommended for intake</h2>
-<table>
-    <th>Item</th><th>Quantity(in g)</th>
-            <tr>
-            {% for item, quantity in results %}
-            
-                <td>{{ item }}</td>
-                <td>{{ quantity|floatformat:2 }}</td>
-            </tr>
-            {% endfor %}
-        
-        </table>
-        <a href="{% url 'categorize' %}" class="btn-back">Tryout more suggestions</a>
-        <style>
-            .btn-back {
-                display: inline-block;
-                padding: 10px 0px; 
-                background-color: #0088ff;
-                color: rgb(255, 255, 255);
-                text-shadow: 0px 0px 10px rgba(255, 0, 0, 0.1);
-                font-size: 18px; 
-                text-align: center;
-                text-decoration: none;
-                border-radius: 8px;
-                margin: 20px auto; 
-                display: block; 
-                width: 200px; 
-            }
-        
-            .btn-back:hover {
-                background-color: #0088ff;
-            }
-
-            
-        </style>
-<a href="{% url 'logout' %}"><button type="button" class="btn btn-success">Logout</button></a>
-
+    <table bgcolor="gray">
+        <th>Item</th><th>Quantity (in g)</th><th>Image</th>
+        {% for item, quantity in results %}
+        <tr>
+            <td>{{ item.item_name }}</td>
+            <td>{{ quantity|floatformat:2 }}</td>  <!-- Access quantity -->
+            <td>
+                {% if item.image %}
+                    <img src="{{ item.image.url }}" alt="{{ item.item_name }}" style="width: 100px; height: 100px;">
+                {% else %}
+                    No image available
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="{% url 'categorize' %}" class="btn-back">Tryout more suggestions</a>
+    <a href="{% url 'logout' %}"><button type="button" class="btn btn-success">Logout</button></a>
 {% endblock %}
