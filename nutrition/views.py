@@ -4,9 +4,6 @@ from django.conf import settings
 from .models import *
 from scipy.optimize import linprog
 import numpy as np
-import matplotlib.pyplot as plt
-import io
-import urllib, base64
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
