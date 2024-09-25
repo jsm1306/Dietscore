@@ -1,15 +1,59 @@
 {% extends 'base.html' %}
 {% block content %}
-
 <form method="POST" action="">
- {% csrf_token %}
- <h1>Login</h1>
- Username: <input type="text" name="username"><br>
- Password: <input type="password" name="password"><br>
- <input type="submit" name="Login">
-</form>
-{% for message in messages %}
-<p id="messages">{{message}} </p>
-{% endfor %}
-<a href="{% url 'register' %}"><button type="button" class="btn btn-success">Register</button></a>
+    {% csrf_token %}
+    <h1>Login</h1>
+    <p>Username:</p> <input type="text" name="username">
+    <p>Password:</p> <input type="password" name="password">
+    <button class="button button2">Submit</button><br>
+    <p>Do not have an account? Register here</p>
+    <a href="{% url 'register' %}">
+        <button type="button" class="btn custom-register-btn">Register</button>
+    </a>
+   </form>
+   {% for message in messages %}
+   <p id="messages">{{message}} </p>
+   {% endfor %}
+   
+
+
+
+
+<style>
+    p{
+        color:white;
+    }
+    p1{
+        color:white;
+        /* text-align: center; */
+        
+    }
+    .button {
+  border: none;
+  color: white;
+  padding: 0px 0px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 0px 0px;
+  cursor: pointer;
+ 
+}
+.custom-register-btn {
+    background-color: #28a745; /* Custom background color */
+    color: white; /* Custom text color */
+    border: none; /* Remove border */
+    padding: 0px 20px; /* Adjust padding */
+    font-size: 16px; /* Adjust font size */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+}
+
+.custom-register-btn:hover {
+    background-color: #218838; 
+}
+.button1 {background-color: #00ba0f;align-self: center;}
+.button2 {background-color: #0057ba;} 
+</style>
 {% endblock %}
