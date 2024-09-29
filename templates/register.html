@@ -3,7 +3,10 @@
 <form method="POST" action="">
     {% csrf_token %}
    {{form}}
-   <input type="submit" name="Create User">
-   </form>
-   <a href="{% url 'login' %}"><button type="button" class="btn btn-success">Login</button></a>
+   <button class="button button2">Submit</button><br>
+   <p>Already have an account?<a href="{% url 'login' %}">Login here</a> </p>
+   
+</a>
+</form>
+   
 {% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<p2>Your Submission History</p2>
+
+{% if submissions %}
+    <ul>
+        {% for submission in submissions %}
+            <li>Submission made on {{ submission.submitted_at }}</li>
+            <!-- Add more details from the submission if necessary -->
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>You have not made any submissions yet.</p>
+{% endif %}
+<title>User History</title>
+</head>
+<body>
+    <p2>Your Item Entries</p2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Item Name</th>
+                <th>Quantity (g)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item, quantity in item_quantities %}
+            <tr>
+                <td>{{ item|title }}</td>
+                <td>{{ quantity }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'logout' %}"><button type="button" class="btn btn-success">Logout</button></a>
+</body>
+</html>
+{% endblock %}

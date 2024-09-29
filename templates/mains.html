@@ -9,18 +9,15 @@
       <div class="Login">
           <form>
             <h1> Enter Your Details:</h1>
-            <label>Name</label>
-            <input type="text" name="name"><br>
             <label>Age</label><br>
-            <input type="number" name="age" >
+            <input type="number" name="age" ><br>
             <label for="options">Gender:</label><br>
             <select id="options" name="options"><br>
         <option value="Male">Male</option>
         <option value="Female">Female</option><br>
            </select><br>
-           <div class="button-container">
-            <button>Submit</button>
-          </div>
+               <button class="button button2">Submit</button><br>
+
             </form>
           </form>
         </div>
@@ -42,7 +39,9 @@
 
 
  </style>
- <a href="{% url 'logout' %}"><button type="button" class="btn btn-success">Logout</button></a>
+ <a href="{% url 'logout' %}">
+  <button type="button" class="btn custom-register-btn">Logout</button>
+</a>
 
 {% endblock %}
 

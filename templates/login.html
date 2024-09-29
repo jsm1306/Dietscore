@@ -6,54 +6,21 @@
     <p>Username:</p> <input type="text" name="username">
     <p>Password:</p> <input type="password" name="password">
     <button class="button button2">Submit</button><br>
-    <p>Do not have an account? Register here</p>
-    <a href="{% url 'register' %}">
-        <button type="button" class="btn custom-register-btn">Register</button>
-    </a>
-   </form>
-   {% for message in messages %}
-   <p id="messages">{{message}} </p>
+    {% for message in messages %}
+   <p1 id="messages">{{message}} </p1>
    {% endfor %}
+    <p>Do not have an account?<a href="{% url 'register' %}"> Register here</a> 
+   </form>
+   
    
 
 
 
 
 <style>
-    p{
-        color:white;
-    }
     p1{
-        color:white;
-        /* text-align: center; */
-        
+        color:rgb(255, 255, 255);
     }
-    .button {
-  border: none;
-  color: white;
-  padding: 0px 0px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 0px 0px;
-  cursor: pointer;
- 
-}
-.custom-register-btn {
-    background-color: #28a745; /* Custom background color */
-    color: white; /* Custom text color */
-    border: none; /* Remove border */
-    padding: 0px 20px; /* Adjust padding */
-    font-size: 16px; /* Adjust font size */
-    border-radius: 5px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor */
-}
-
-.custom-register-btn:hover {
-    background-color: #218838; 
-}
-.button1 {background-color: #00ba0f;align-self: center;}
-.button2 {background-color: #0057ba;} 
+   
 </style>
 {% endblock %}

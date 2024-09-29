@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Nutrition Intake Summary</h2>
+<h3>Nutrition Intake Summary:</h3>
 
-<table bgcolor="black">
+<table>
     <thead>
-        <tr bgcolor="grey">
+        <tr>
             <th>Item</th>
             <th>Quantity (g)</th>
             <th>Calories (Kcal)</th>
@@ -18,7 +18,7 @@
     </thead>
     <tbody>
         {% for item, quantity, item_info in item_details %}
-        <tr bgcolor="lightgrey">
+        <tr>
             <td>{{ item }}</td>
             <td>{{ quantity }}</td>
             <td>{{ item_info.Calories }}</td>
@@ -32,7 +32,7 @@
         {% endfor %}
     </tbody>
     <tfoot>
-        <tr bgcolor="silver">
+        <tr>
             <th>Total</th>
             <th></th>
             <th>{{ totals.Calories }}</th>
@@ -43,7 +43,7 @@
             <th>{{ totals.Carbs }}</th>
             <th>{{ totals.Sugar }}</th>
         </tr>
-        <tr bgcolor="silver">
+        <tr>
             <th>Minimum</th>
             <th></th>
             <th>{{ requirement.Calories }}</th>
@@ -54,42 +54,45 @@
             <th>{{ requirement.Carbs }}</th>
             <th>{{ requirement.Sugar }}</th>
         </tr>
-        <tr bgcolor="silver">
+        <tr>
             <th>Requirement met?</th>
             <th></th>
-            <th class="{% if meets_requirements.Calories %}green{% else %}red{% endif %}">
+            <th class="{% if meets_requirements.Calories %}status-yes{% else %}status-no{% endif %}">
                 {% if meets_requirements.Calories %}Yes{% else %}No{% endif %}
             </th>
-            <th class="{% if meets_requirements.Proteins %}green{% else %}red{% endif %}">
+            <th class="{% if meets_requirements.Proteins %}status-yes{% else %}status-no{% endif %}">
                 {% if meets_requirements.Proteins %}Yes{% else %}No{% endif %}
             </th>
-            <th class="{% if meets_requirements.Fats %}green{% else %}red{% endif %}">
+            <th class="{% if meets_requirements.Fats %}status-yes{% else %}status-no{% endif %}">
                 {% if meets_requirements.Fats %}Yes{% else %}No{% endif %}
             </th>
-            <th class="{% if meets_requirements.Sodium %}green{% else %}red{% endif %}">
+            <th class="{% if meets_requirements.Sodium %}status-yes{% else %}status-no{% endif %}">
                 {% if meets_requirements.Sodium %}Yes{% else %}No{% endif %}
             </th>
-            <th class="{% if meets_requirements.Fiber %}green{% else %}red{% endif %}">
+            <th class="{% if meets_requirements.Fiber %}status-yes{% else %}status-no{% endif %}">
                 {% if meets_requirements.Fiber %}Yes{% else %}No{% endif %}
             </th>
-            <th class="{% if meets_requirements.Carbs %}green{% else %}red{% endif %}">
+            <th class="{% if meets_requirements.Carbs %}status-yes{% else %}status-no{% endif %}">
                 {% if meets_requirements.Carbs %}Yes{% else %}No{% endif %}
             </th>
-            <th class="{% if meets_requirements.Sugar %}green{% else %}red{% endif %}">
+            <th class="{% if meets_requirements.Sugar %}status-yes{% else %}status-no{% endif %}">
                 {% if meets_requirements.Sugar %}Yes{% else %}No{% endif %}
             </th>
         </tr>
-        
-        
-        
-        
     </tfoot>
 </table>
 <br>
 
+<a href="{% url 'score' %}">
+    <button type="button" class="btn custom-register-btn">Go Back</button>
+</a>
+<a href="{% url 'categorize' %}">
+    <button class="button button3">Go Front</button>
+    
+</a>
 
-<br>
-<a href="{% url 'score' %}">Go Back</a>
-<a href="{% url 'categorize' %}">Go Front</a>
+<style>
+    .button3 {background-color: #0057ba;} 
 
+</style>
 {% endblock %}

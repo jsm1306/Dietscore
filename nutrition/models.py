@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 # Create your models here.
 
 class Category(models.Model):
@@ -30,10 +30,11 @@ class BMICalculation(models.Model):
 
 
 class UserSubmission(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  
     submitted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Submission at {self.submitted_at}"
+        return f"Submission by {self.user.username if self.user else 'Unknown'} at {self.submitted_at}"
 
 class NutritionInfo(models.Model):
     item_name = models.CharField(max_length=100, unique=True)

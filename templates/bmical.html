@@ -4,9 +4,9 @@
 
 <form action="{% url 'bmicalc' %}" method="post">
     {% csrf_token %}
-    Weight:<br><input type="number" name="weig"><br>
-    Height:<br><input type="number" name="heig"><br>
-    Age:<br><input type="number" name="age"><br>
+    <p>Weight:</p><input type="number" name="weig">
+    <p>Height:</p><input type="number" name="heig">
+    <p>Age:</p><input type="number" name="age">
     <label for="options">Gender:</label><br>
     <select id="options" name="options">
         <option value="Male">Male</option>
@@ -14,6 +14,6 @@
         <option value="Other">Other</option>
     </select>
     <br><br>
-    <input type="submit">
+    <button class="button button2">Submit</button><br>
 </form>
 {% endblock %}

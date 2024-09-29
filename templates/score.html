@@ -1,34 +1,41 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Welcome {{ name }}!</h2>
+<div class="container">
+    <div class="welcome-box">
+        <h3>Welcome {{ name }}!</h3>
+    </div>
 
-<h3>Welcome to our website!<br>
-    <h4>Please check your Diet Score by inputing the items and quantity you have consumed in a day!</h4>
-
-</h3>
-<form id="inputForm" method="post" action="{% url 'compute' %}">
-    {% csrf_token %}
-    <h1>Select Food Items:</h1>
-    <div id="inputContainer">
-        <div class="input-group">
-            <label>Item:</label>
-            <select name="item[]" required>
-                <option value="">Select an item</option>
-                {% for item in nutrition_items %}
-                <option value="{{ item }}">{{ item }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="input-group">
-            <label>Quantity (g):</label>
-            <!-- note need to include quantity in packets!!!!  -->
-             <!-- note include packets quantity in tiffin in views.py also, next edit -->
-            <input type="number" name="quantity[]" required>
-            <span class="add-button" onclick="addInput()">&#43;</span>
+    <div class="content-section">
+        <div class="message-box">
+            <h4>Please check your Diet Score by inputing the items and quantity you have consumed in a day!</h4>
         </div>
     </div>
-    <button type="submit">Submit</button>
-</form>
+<br>
+        <form id="inputForm" method="post" action="{% url 'compute' %}">
+            {% csrf_token %}
+            <div class="form-container">
+                <h2>Select Food Items:</h2>
+                <div id="inputContainer">
+                    <div class="input-group">
+                        <label>Item:</label>
+                        <select name="item[]" required>
+                            <option value="">Select an item</option>
+                            {% for item in nutrition_items %}
+                            <option value="{{ item }}">{{ item }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Quantity (g):</label>
+                        <input type="number" name="quantity[]" required>
+                        <span class="add-button" onclick="addInput()">&#43;</span>
+                    </div>
+                </div>
+                <button class="button button2">Submit</button><br>
+            </div>
+        </form>
+    
+</div>
 
 <script>
     function addInput() {
@@ -51,20 +58,88 @@
 </script>
 
 <style>
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .welcome-box {
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 90%;
+        margin-bottom: 20px;
+    }
+
+    .welcome-box h3 {
+        color: #0D3B66;
+        font-size: 24px;
+        font-weight: bold;
+        text-align: left;
+    }
+
+    .content-section {
+        display: flex;
+        justify-content: space-between;
+        width: 90%;
+    }
+
+    .message-box {
+        background-color: #e0f7fa;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        height: 10%;
+        padding-bottom: 10px;
+    }
+
+    .message-box h4 {
+        font-size: 18px;
+        color: #042a24;
+    }
+
     .input-group {
         margin-bottom: 10px;
         display: flex;
-        flex-direction: column; 
+        flex-direction: column;
         padding: 0px 0px;
     }
+
+    .input-group label {
+        margin-bottom: 5px;
+        font-size: 14px;
+    }
+
     .add-button {
         cursor: pointer;
         color: rgb(255, 255, 255);
-        margin-top: 0px;
+        margin-top: 10px;
         font-size: 24px;
     }
 
+    .button {
+        background-color: #0076f4;
+        color: white;
+        padding: 0px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
 
+    .button:hover {
+        background-color: #00796b;
+    }
 
+    /* Adding a little more styling */
+    select, input[type="number"] {
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+    }
 </style>
 {% endblock %}

@@ -25,17 +25,17 @@ def loginPage(request):
     if request.user.is_authenticated:
         return redirect('mains')
     else:
-        if request.method=='POST':
-            username=request.POST.get('username')
-            password=request.POST.get('password')
-            print(username, password)
+        if request.method == 'POST':
+            username = request.POST.get('username')
+            password = request.POST.get('password')
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
+                request.session['username'] = username
                 return redirect('mains')
             else:
-                messages.success(request,"Username or Password is incorrect")
-    return render(request,'login.html')
+                messages.success(request, "Username or Password is incorrect")
+    return render(request, 'login.html')
 
 
 @login_required(login_url='login')
@@ -57,27 +57,27 @@ def category_wise_items(request):#to display categories in category.html(navbar)
         'items_by_category': items_by_category
     }
     return render(request, 'categorylist.html', context)
+
 @login_required(login_url='login')
-def add(request):#inputs display fn
-    if request.method=='POST':
-        name=str(request.POST['name'])
-        age=int(request.POST['age'])
-        gender = request.POST.get('options', '')
-        request.session['name'] = name
-        request.session['age'] = age
-        request.session['gender'] = gender
-        UserProfile.objects.create(name=name, age=age, gender=gender)
-        nutrition_items = NutritionInfo.objects.values_list('item_name', flat=True)
-        # categories = Category.objects.all()  
-        
-        return render(request, 'score.html', {
-            'age': age,
-            'name': name,
-            'gender': gender,
-            'nutrition_items': nutrition_items,
-            # 'categories': categories  
-        })
-    return render(request, 'mains.html') 
+def add(request):
+    if request.method == 'POST':
+        username = request.session.get('username')
+        if username:
+            age=int(request.POST['age'])
+            gender=request.POST.get('options', '')
+            request.session['age'] = age
+            request.session['gender'] = gender
+            UserProfile.objects.create(name=username, age=age, gender=gender)
+
+            nutrition_items = NutritionInfo.objects.values_list('item_name', flat=True)
+
+            return render(request, 'score.html', {
+                'age': age,
+                'name': username,
+                'gender': gender,
+                'nutrition_items': nutrition_items,
+            })
+    return render(request, 'mains.html')
 
 @login_required(login_url='login')
 def categorize(request):#to display items category wise
@@ -106,11 +106,7 @@ def suggester(request):
                 nutrition_data.append(item)
             except NutritionInfo.DoesNotExist:
                 print(f"Item '{item_name}' does not exist in the database.")
-
-        # Ensure that the requirements function is defined and works
         requirements = daily(request)
-
-        # Set up arrays for the linear programming
         A = [
             [-item.calories for item in nutrition_data],
             [-item.proteins for item in nutrition_data],
@@ -123,16 +119,12 @@ def suggester(request):
 
         b = [-requirements['Calories'], -requirements['Proteins'], -requirements['Fats'],
              -requirements['Sodium'], -requirements['Fiber'], -requirements['Carbs'], -requirements['Sugar']]
-
         c = [item.price for item in nutrition_data]
         x_bounds = [(0, None) for _ in nutrition_data]
 
-        # Perform linear programming
         res = linprog(c, A_ub=A, b_ub=b, bounds=x_bounds, options={"disp": True})
 
         quantities = res.x  
-
-        # Prepare results with NutritionInfo instances and calculated quantities
         results = [(item, quantity) for item, quantity in zip(nutrition_data, quantities)]
 
         return render(request, 'suggestresult.html', {'results': results})
@@ -226,7 +218,7 @@ def load_nutrition_data():# this fn is to load the nutrition data of items and u
         }
     return nutrition_data
 
-
+@login_required
 def compute(request):#**** fn, to calculate req met or not, sum divide and compare
     if request.method == 'POST':
         items = request.POST.getlist('item[]')
@@ -234,12 +226,15 @@ def compute(request):#**** fn, to calculate req met or not, sum divide and compa
         nutrition_data = load_nutrition_data()
         requirements = daily(request)
 
+        item_quantities = [(item.lower().strip(), quantity) for item, quantity in zip(items, quantities)]
+        request.session['item_quantities'] = item_quantities
+
         if not requirements:
             print("Error1-not found")
             requirements = {'Calories': 0, 'Proteins': 0, 'Fats': 0, 'Sodium': 0, 'Fiber': 0, 'Carbs': 0, 'Sugar': 0}
         totals = {'Calories': 0, 'Proteins': 0, 'Fats': 0, 'Sodium': 0, 'Fiber': 0, 'Carbs': 0, 'Sugar': 0}
         item_details = []
-        submission = UserSubmission.objects.create()
+        submission = UserSubmission.objects.create(user=request.user)
         for item, quantity in zip(items, quantities):
             item = item.lower().strip()
             try:
@@ -247,20 +242,20 @@ def compute(request):#**** fn, to calculate req met or not, sum divide and compa
                 if item in nutrition_data:
                     item_info = nutrition_data[item]
                     for key in totals:
-                        totals[key] += (item_info[key] * quantity / 100)
+                        totals[key] += (item_info[key] * quantity / 1000)
                         totals[key] = round(totals[key], 2)
                     item_details.append((item, quantity, item_info))
                     ItemEntry.objects.create(#to edit items entered by user in database
                         submission=submission,
                         item_name=item,
                         quantity=quantity,
-                        calories=item_info['Calories']*quantity/100,
-                        proteins=item_info['Proteins']*quantity/100,
-                        fats=item_info['Fats']*quantity/100,
-                        sodium=item_info['Sodium']*quantity/100,
-                        fiber=item_info['Fiber']*quantity/100,
-                        carbs=item_info['Carbs']*quantity/100,
-                        sugar=item_info['Sugar']*quantity/100
+                        calories=item_info['Calories']*quantity/1000,
+                        proteins=item_info['Proteins']*quantity/1000,
+                        fats=item_info['Fats']*quantity/1000,
+                        sodium=item_info['Sodium']*quantity/1000,
+                        fiber=item_info['Fiber']*quantity/1000,
+                        carbs=item_info['Carbs']*quantity/1000,
+                        sugar=item_info['Sugar']*quantity/1000
                     )
             except ValueError:
                 print("Error2-cant fetch")#print in console
@@ -282,10 +277,8 @@ Changes to be made:
 ● Check calories
 ● Sweets combine in main course
 ● Include 3/4 items in main course while selecting for recommendation 
-● Add images to items
-● Quantity measure from number to grams
-● YES in green NO in red
 ● Dietscore logo
+● User should be able to view the past history too, like date, day and the items he entered
 '''
 def suggester_view(request):
     if request.method == 'POST':
@@ -298,3 +291,13 @@ def suggester_view(request):
                     selected_items.append(item)
 
         return render(request, 'suggestresult.html', {'results': selected_items})
+
+@login_required
+def user_history(request):
+    user_submissions = UserSubmission.objects.filter(user=request.user)
+    item_quantities = request.session.get('item_quantities', [])
+    context = {
+        'submissions': user_submissions,
+        'item_quantities': item_quantities,
+    }
+    return render(request, 'user_history.html', context)
