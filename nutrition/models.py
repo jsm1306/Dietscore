@@ -47,7 +47,8 @@ class NutritionInfo(models.Model):
     sugar = models.FloatField(default=0)
     category = models.ForeignKey(Category, related_name='nutrition_items', on_delete=models.CASCADE, null=True)
     price = models.FloatField(default=0)
-    image = models.ImageField(upload_to='nutrition_images/', null=True, blank=True)  # New image field
+    image = models.ImageField(upload_to='nutrition_images/', null=True, blank=True)
+    is_weight_based = models.BooleanField(default=True)
 
 
     def __str__(self):

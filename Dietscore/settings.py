@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-b@gaij!g0+*l&c^5ep+#3bwhh-0#temc%^=mx4=+io(slh143a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['dietsuggestor.onrender.com','127,0.0.1']
 
 
 # Application definition

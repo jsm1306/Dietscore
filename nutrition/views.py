@@ -232,35 +232,62 @@ def compute(request):#**** fn, to calculate req met or not, sum divide and compa
         if not requirements:
             print("Error1-not found")
             requirements = {'Calories': 0, 'Proteins': 0, 'Fats': 0, 'Sodium': 0, 'Fiber': 0, 'Carbs': 0, 'Sugar': 0}
+
         totals = {'Calories': 0, 'Proteins': 0, 'Fats': 0, 'Sodium': 0, 'Fiber': 0, 'Carbs': 0, 'Sugar': 0}
         item_details = []
         submission = UserSubmission.objects.create(user=request.user)
+
         for item, quantity in zip(items, quantities):
             item = item.lower().strip()
             try:
                 quantity = float(quantity)
                 if item in nutrition_data:
                     item_info = nutrition_data[item]
-                    for key in totals:
-                        totals[key] += (item_info[key] * quantity / 1000)
-                        totals[key] = round(totals[key], 2)
+                    is_weight_based = item_info['is_weight_based']
+
+                    if is_weight_based:
+                        for key in totals:
+                            totals[key] += (item_info[key] * quantity / 1000)  
+                            totals[key] = round(totals[key], 2)
+
+                        ItemEntry.objects.create(
+                            submission=submission,
+                            item_name=item,
+                            quantity=quantity,
+                            calories=item_info['Calories'] * quantity / 1000,
+                            proteins=item_info['Proteins'] * quantity / 1000,
+                            fats=item_info['Fats'] * quantity / 1000,
+                            sodium=item_info['Sodium'] * quantity / 1000,
+                            fiber=item_info['Fiber'] * quantity / 1000,
+                            carbs=item_info['Carbs'] * quantity / 1000,
+                            sugar=item_info['Sugar'] * quantity / 1000
+                        )
+
+                    else:
+                        for key in totals:
+                            totals[key] += (item_info[key] * quantity)  
+                            totals[key] = round(totals[key], 2)
+
+                        # Save in ItemEntry
+                        ItemEntry.objects.create(
+                            submission=submission,
+                            item_name=item,
+                            quantity=quantity,
+                            calories=item_info['Calories'] * quantity,  
+                            proteins=item_info['Proteins'] * quantity,
+                            fats=item_info['Fats'] * quantity,
+                            sodium=item_info['Sodium'] * quantity,
+                            fiber=item_info['Fiber'] * quantity,
+                            carbs=item_info['Carbs'] * quantity,
+                            sugar=item_info['Sugar'] * quantity
+                        )
+
                     item_details.append((item, quantity, item_info))
-                    ItemEntry.objects.create(#to edit items entered by user in database
-                        submission=submission,
-                        item_name=item,
-                        quantity=quantity,
-                        calories=item_info['Calories']*quantity/1000,
-                        proteins=item_info['Proteins']*quantity/1000,
-                        fats=item_info['Fats']*quantity/1000,
-                        sodium=item_info['Sodium']*quantity/1000,
-                        fiber=item_info['Fiber']*quantity/1000,
-                        carbs=item_info['Carbs']*quantity/1000,
-                        sugar=item_info['Sugar']*quantity/1000
-                    )
+
             except ValueError:
-                print("Error2-cant fetch")#print in console
-         #comparing calculated nutrition with min req
+                print("Error2-cant fetch")
         meets_requirements = {key: totals[key] >= requirements[key] for key in totals}
+
         request.session['totals'] = totals
         context = {
             'item_details': item_details,
@@ -271,6 +298,7 @@ def compute(request):#**** fn, to calculate req met or not, sum divide and compa
         return render(request,'inputsbase.html',context)
 
     return render(request,'score.html')
+
 '''
 Changes to be made: 
 ● Qunatity measures to be added: in (g), in packet, in millilitres, number(in tiffin)
