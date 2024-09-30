@@ -7,73 +7,50 @@
 
     <div class="content-section">
         <div class="message-box">
-            <h4>Please check your Diet Score by inputting the items and quantity you have consumed in a day!</h4>
+            <h4>Please check your Diet Score by inputing the items and quantity you have consumed in a day!</h4>
         </div>
     </div>
-    <br>
-    <form id="inputForm" method="post" action="{% url 'compute' %}">
-        {% csrf_token %}
-        <div class="form-container">
-            <h2>Select Food Items:</h2>
-            <div id="inputContainer">
-                <div class="input-group">
-                    <label>Item:</label>
-                    <select name="item[]" onchange="updateQuantityInput(this)" required>
-                        <option value="">Select an item</option>
-                        {% for item in nutrition_items %}
-                        <option value="{{ item.id }}" data-is-weight-based="{{ item.is_weight_based }}">
-                            {{ item.name }}
-                        </option>
-                        {% endfor %}
-                    </select>
+<br>
+        <form id="inputForm" method="post" action="{% url 'compute' %}">
+            {% csrf_token %}
+            <div class="form-container">
+                <h2>Select Food Items:</h2>
+                <div id="inputContainer">
+                    <div class="input-group">
+                        <label>Item:</label>
+                        <select name="item[]" required>
+                            <option value="">Select an item</option>
+                            {% for item in nutrition_items %}
+                            <option value="{{ item }}">{{ item }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Quantity (g):</label>
+                        <input type="number" name="quantity[]" required>
+                        <span class="add-button" onclick="addInput()">&#43;</span>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label>Quantity:</label>
-                    <input type="number" name="quantity[]" required placeholder="Enter quantity">
-                    <span class="quantity-unit">g</span>  <!-- This will display the unit (g or items) -->
-                    <span class="add-button" onclick="addInput()">&#43;</span>
-                </div>
+                <button class="button button2">Submit</button><br>
             </div>
-            <button class="button button2">Submit</button><br>
-        </div>
-    </form>
-
+        </form>
+    
 </div>
 
 <script>
-    // Function to update the input placeholder and unit based on item type
-    function updateQuantityInput(selectElement) {
-        const selectedItem = selectElement.options[selectElement.selectedIndex];
-        const isWeightBased = selectedItem.getAttribute('data-is-weight-based') === 'true';
-        const quantityInput = selectElement.parentElement.nextElementSibling.querySelector('input');
-        const quantityUnit = selectElement.parentElement.nextElementSibling.querySelector('.quantity-unit');
-
-        if (isWeightBased) {
-            quantityInput.placeholder = "Enter quantity in grams";
-            quantityUnit.textContent = "g";
-        } else {
-            quantityInput.placeholder = "Enter number of items";
-            quantityUnit.textContent = "items";
-        }
-    }
-
-    // Function to add new item input dynamically
     function addInput() {
         const newInputGroup = document.createElement('div');
         newInputGroup.classList.add('input-group');
         newInputGroup.innerHTML = `
             <label>Item:</label>
-            <select name="item[]" onchange="updateQuantityInput(this)" required>
+            <select name="item[]" required>
                 <option value="">Select an item</option>
                 {% for item in nutrition_items %}
-                <option value="{{ item.id }}" data-is-weight-based="{{ item.is_weight_based }}">
-                    {{ item.name }}
-                </option>
+                <option value="{{ item }}">{{ item }}</option>
                 {% endfor %}
             </select>
-            <label>Quantity:</label>
-            <input type="number" name="quantity[]" required placeholder="Enter quantity">
-            <span class="quantity-unit">g</span>
+            <label>Quantity (g):</label>
+            <input type="number" name="quantity[]" required>
             <span class="add-button" onclick="addInput()">&#43;</span>
         `;
         document.getElementById('inputContainer').appendChild(newInputGroup);
@@ -158,17 +135,11 @@
         background-color: #00796b;
     }
 
+    /* Adding a little more styling */
     select, input[type="number"] {
         padding: 8px;
         border-radius: 4px;
         border: 1px solid #ddd;
-    }
-    
-    .quantity-unit {
-        display: inline-block;
-        margin-left: 5px;
-        font-weight: bold;
-        color: #555;
     }
 </style>
 {% endblock %}
