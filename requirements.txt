@@ -12,7 +12,7 @@ Django==5.0.7
 django-allauth==64.1.0
 django-dbbackup==4.2.1
 fonttools==4.53.1
-gunicorn==23.0.0
+gunicorn == 22.0.0
 idna==3.7
 kiwisolver==1.4.7
 markdown2==2.5.0
@@ -48,4 +48,3 @@ typing_extensions==4.12.2
 tzdata==2024.1
 urllib3==2.2.2
 whitenoise==6.7.0
-gunicorn == 22.0.0
