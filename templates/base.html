@@ -90,7 +90,7 @@
             width: 200px;
             position: relative;
             line-height: 40px;
-            border-radius: 40px;
+            border-radius: 5px;
             border: none;
             margin: 10px 0px;
             box-shadow: 0px 0px 5px rgba(0,0,0,0.3);
@@ -158,24 +158,45 @@
   font-size: 16px;
   margin: 0px 0px;
   cursor: pointer;
-  border-radius: 20px;
+  border-radius: 5px;
  
 }
+.button:hover {
+    background-color: #194587;
+    background-color: #154973;
+}
 .custom-register-btn {
-    background-color: #0ba32f; 
+    background-color: #00a827; 
     color: white;
     border: none; 
     padding: 0px 20px; 
     font-size: 16px; 
     cursor: pointer; 
-    border-radius: 20px;
+    border-radius: 5px;
 }
 
 .custom-register-btn:hover {
-    background-color: #218838; 
+    background-color: #00801e; 
 }
-.button1 {background-color: #00ba0f;align-self: center;}
+.button1 {background-color: #00a827;align-self: center;}
 .button2 {background-color: #0057ba;} 
+.button3 {
+        background-color: #0057ba;
+        padding: 0px 40px;
+        font-size: 19px;
+        border: none;
+        color: white;
+        cursor: pointer;
+        width: 100%;
+
+    }
+    .button-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%; 
+        margin-top: 20px; 
+    }
         main {
             background: #ffffff38;
             padding: 20px;
@@ -213,11 +234,11 @@ th {
 }
 
 tbody tr:nth-child(even) {
-    background-color: #e9e9e9; /* Stripe for alternate rows */
+    background-color: #e9e9e9; 
 }
 
 tfoot th {
-    background-color: #c0c0c0; /* Foot background */
+    background-color: #c0c0c0; 
 }
 
 
@@ -242,7 +263,7 @@ table th, table td {
 <body>
     {% include 'navbar.html' %}
     <header>
-        <h3>Check your Diet Score</h3>
+        <h3>Diet Suggester</h3>
     </header>
     <main>
         {% block content %}

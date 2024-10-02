@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Learn More: How Our Diet Optimizer Works</h3>
+<style>
+    .details {
+        margin: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 20px; 
+        background-color: #f9f9f9;
+        line-height: 1.7; 
+    }
+    .math-info {
+        font-family: 'Courier New', Courier, monospace;
+        color: #333;
+        background-color: #e0e0e0; 
+        font-weight: bold; 
+        padding: 15px; 
+        border-radius: 5px;
+        text-align: center;
+        margin: 20px 0; 
+    }
+</style>
+
+<div class="details">
+    <br>
+    <p5>Our Diet Suggester uses a powerful mathematical approach called <strong>Linear Programming</strong> to help you meet your daily nutritional requirements while minimizing your total cost. All nutritional data in our database is calculated per 100 grams of each food item. For example, if you select 150g of banana, you’ll see how many calories, proteins, fats, and other nutrients that amount provides for 100g and then calculates for the 150gm banana.</p5>
+<br><br>
+    <h4>Step-by-Step Process:</h4><br>
+    <ol>
+        <li><strong>User Input:</strong> You provide your daily food intake along with quantities, and we calculate whether these selections meet your required daily nutrition.</li>
+        <li><strong>Optimization:</strong> If your intake does not meet your daily needs, our website suggests optimized quantities of different food items, balancing cost and nutrition.</li>
+    </ol>
+<br>
+    <h4>What’s Happening in the Background:</h4>
+    <p5>We use the following formula to calculate the total nutritional value for each item:</p5>
+    <div class="math-info">
+        Nutrient Value = (Nutrient Amount × Quantity) / 100
+    </div>
+    <p5>For example, if you select 200g of rice and 150g of banana, we calculate how many calories, proteins, and other nutrients you’re consuming based on the values for 100g of each item. This total is then compared to your daily nutritional requirements. If any of the nutrients fall short, our website will suggest a balanced intake.</p5>
+<br><br>
+    <h4>How We Optimize Your Diet:</h4>
+    <p5>Using Linear Programming, we find the right balance of quantities for the food items you select to meet your nutritional goals, while minimizing the total cost. The problem is formulated like this:</p5>
+    <div class="math-info">
+        Minimize: Total Cost = c ⋅ x
+    </div>
+    <p5>Where <strong>c</strong> represents the cost of each food item, and <strong>x</strong> is the quantity to be calculated. Additionally, we make sure the selected quantities provide enough nutrients by solving the following:</p5>
+    <div class="math-info">
+        Nutritional Intake: A ⋅ x ≥ b
+    </div>
+    <p5>Where <strong>A</strong> represents the nutritional values (calories, proteins, etc.) for each food per 100 grams, and <strong>b</strong> represents your required intake which depends on age and Gender provided by user.</p5>
+</div>
+<a href="{% url 'logout' %}"><button type="button" class="btn btn-success">Logout</button></a>
+
+{% endblock %}

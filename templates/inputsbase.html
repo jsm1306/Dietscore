@@ -84,15 +84,16 @@
 <br>
 
 <a href="{% url 'score' %}">
-    <button type="button" class="btn custom-register-btn">Go Back</button>
-</a>
-<a href="{% url 'categorize' %}">
-    <button class="button button3">Go Front</button>
-    
-</a>
+    <button type="button" class="btn custom-register-btn">← Go Back</button>
+</a><br>
+<div class="button-container">
+    <a href="{% url 'categorize' %}">
+        <button class="button button3">Try our Diet Suggester</button>
+    </a>
+</div>
 
 <style>
-    .button3 {background-color: #0057ba;} 
-
+    
 </style>
+
 {% endblock %}

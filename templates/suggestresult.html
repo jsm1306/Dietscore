@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-    <h3>Quantities recommended for intake</h3>
+    <h3>Have a look at your optimized diet quantities:</h3>
     <table bgcolor="gray">
-        <th>Item</th><th>Quantity (in g)</th><th>Image</th>
-        {% for item, quantity in results %}
+        <th>Item</th><th>Quantity (in g)</th><th>Price (₹)</th><th>Image</th>
+        {% for item, quantity, price in results %}
         <tr>
             <td>{{ item.item_name }}</td>
-            <td>{{ quantity|floatformat:2 }}</td>  <!-- Access quantity -->
+            <td>{{ quantity|floatformat:2 }} g</td>  
+            <td>₹ {{ price }}</td>
             <td>
                 {% if item.image %}
                     <img src="{{ item.image.url }}" alt="{{ item.item_name }}" style="width: 100px; height: 100px;">
@@ -17,6 +18,9 @@
         </tr>
         {% endfor %}
     </table>
-    <a href="{% url 'categorize' %}" class="btn-back">Tryout more suggestions</a>
+    <div class="button-container">
+    <a href="{% url 'categorize' %}" ><button type="button" class="button button3">←Tryout more suggestions</button></a>
+</div>
     <a href="{% url 'logout' %}"><button type="button" class="btn btn-success">Logout</button></a>
+    <a href="{% url 'moreinfo' %}"><button type="button" class ="button button2">Learn More about calculations</button></a>
 {% endblock %}

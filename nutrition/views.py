@@ -124,8 +124,10 @@ def suggester(request):
 
         res = linprog(c, A_ub=A, b_ub=b, bounds=x_bounds, options={"disp": True})
 
-        quantities = res.x  
-        results = [(item, quantity) for item, quantity in zip(nutrition_data, quantities)]
+        quantities = res.x 
+        
+ 
+        results = [(item, quantity,item.price) for item, quantity in zip(nutrition_data, quantities)]
 
         return render(request, 'suggestresult.html', {'results': results})
 
@@ -273,13 +275,11 @@ def compute(request):#**** fn, to calculate req met or not, sum divide and compa
     return render(request,'score.html')
 '''
 Changes to be made: 
-● Qunatity measures to be added: in (g), in packet, in millilitres, number(in tiffin)
-● Check database values
-● Sweets combine in main course
-● Dietscore logo
 ● Stylize few things
-● Maybe club mains.html and login.html?
+● add a pop up button in inputsbase.html stating you have not met these requirements calories
+● learnmore button that will render to a page explaining the calculations
 '''
+@login_required
 def suggester_view(request):
     if request.method == 'POST':
         selected_items = []
@@ -294,10 +294,12 @@ def suggester_view(request):
 
 @login_required
 def user_history(request):
-    # Fetch user submissions with related item entries
     user_submissions = UserSubmission.objects.filter(user=request.user).prefetch_related('items')
     
     context = {
         'submissions': user_submissions,
     }
     return render(request, 'user_history.html', context)
+@login_required
+def moreinfo(request):
+    return render(request,'optimzerinfo.html')

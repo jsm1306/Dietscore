@@ -17,7 +17,9 @@
         <option value="Female">Female</option><br>
            </select><br>
                <button class="button button2">Submit</button><br>
-
+               <a href="{% url 'logout' %}">
+                <button type="button" class="btn custom-register-btn">Logout</button>
+              </a>
             </form>
           </form>
         </div>
@@ -39,9 +41,7 @@
 
 
  </style>
- <a href="{% url 'logout' %}">
-  <button type="button" class="btn custom-register-btn">Logout</button>
-</a>
+ 
 
 {% endblock %}
 
