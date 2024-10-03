@@ -85,7 +85,7 @@
 
 <a href="{% url 'score' %}">
     <button type="button" class="btn custom-register-btn">← Go Back</button>
-</a><br>
+</a>
 <div class="button-container">
     <a href="{% url 'categorize' %}">
         <button class="button button3">Try our Diet Suggester</button>
@@ -93,7 +93,15 @@
 </div>
 
 <style>
-    
+    .button3 {
+        background-color: #0057ba;
+        padding: 0px 40px;
+        font-size: 17px;
+        border: none;
+        color: white;
+        cursor: pointer;
+        width: 125%;
+    }
 </style>
 
 {% endblock %}
