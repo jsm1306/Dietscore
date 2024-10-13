@@ -9,13 +9,11 @@ class Category(models.Model):
         return self.name
 
 class UserProfile(models.Model):
-    name = models.CharField(max_length=100)
-    age = models.IntegerField()
-    gender = models.CharField(max_length=10) 
+    user = models.OneToOneField(User, on_delete=models.CASCADE,null=True)
  
 
     def __str__(self):
-        return self.name
+        return self.user.username
 
 class BMICalculation(models.Model):
     weight = models.FloatField()
@@ -48,8 +46,7 @@ class NutritionInfo(models.Model):
     category = models.ForeignKey(Category, related_name='nutrition_items', on_delete=models.CASCADE, null=True)
     price = models.FloatField(default=0)
     image = models.ImageField(upload_to='nutrition_images/', null=True, blank=True)
-    is_weight_based = models.BooleanField(default=True)
-
+    unit_weight = models.FloatField(default=100)
 
     def __str__(self):
         return self.item_name

@@ -15,7 +15,9 @@ def registerPage(request):
         if request.method=="POST":
             form=UserCreationForm(request.POST)
             if form.is_valid():
-                form.save()
+                user=form.save()
+                UserProfile.objects.create(user=user)
+
                 return redirect('login')
             else:
                 messages.error(request,"Password does not follow the rules")
@@ -32,6 +34,7 @@ def loginPage(request):
             if user is not None:
                 login(request, user)
                 request.session['username'] = username
+                
                 return redirect('mains')
             else:
                 messages.success(request, "Username or Password is incorrect")
@@ -67,7 +70,6 @@ def add(request):
             gender=request.POST.get('options', '')
             request.session['age'] = age
             request.session['gender'] = gender
-            UserProfile.objects.create(name=username, age=age, gender=gender)
 
             nutrition_items = NutritionInfo.objects.values_list('item_name', flat=True)
 
@@ -216,7 +218,8 @@ def load_nutrition_data():# this fn is to load the nutrition data of items and u
             'Sodium': item.sodium,
             'Fiber': item.fiber,
             'Carbs': item.carbs,
-            'Sugar': item.sugar
+            'Sugar': item.sugar,
+            'UnitWeight': item.unit_weight
         }
     return nutrition_data
 
@@ -240,24 +243,26 @@ def compute(request):#**** fn, to calculate req met or not, sum divide and compa
         for item, quantity in zip(items, quantities):
             item = item.lower().strip()
             try:
-                quantity = float(quantity)
+                quantity = int(quantity)
                 if item in nutrition_data:
                     item_info = nutrition_data[item]
+                    unit_weight = item_info['UnitWeight']
+                    total_weight = quantity * unit_weight
                     for key in totals:
-                        totals[key] += (item_info[key] * quantity / 100)
+                        totals[key] += (item_info[key] * total_weight / 100)
                         totals[key] = round(totals[key], 2)
-                    item_details.append((item, quantity, item_info))
+                    item_details.append((item, total_weight, item_info))
                     ItemEntry.objects.create(#to edit items entered by user in database
                         submission=submission,
                         item_name=item,
-                        quantity=quantity,
-                        calories=item_info['Calories']*quantity/100,
-                        proteins=item_info['Proteins']*quantity/100,
-                        fats=item_info['Fats']*quantity/100,
-                        sodium=item_info['Sodium']*quantity/100,
-                        fiber=item_info['Fiber']*quantity/100,
-                        carbs=item_info['Carbs']*quantity/100,
-                        sugar=item_info['Sugar']*quantity/100
+                        quantity=total_weight,
+                        calories=item_info['Calories']*total_weight/100,
+                        proteins=item_info['Proteins']*total_weight/100,
+                        fats=item_info['Fats']*total_weight/100,
+                        sodium=item_info['Sodium']*total_weight/100,
+                        fiber=item_info['Fiber']*total_weight/100,
+                        carbs=item_info['Carbs']*total_weight/100,
+                        sugar=item_info['Sugar']*total_weight/100
                     )
             except ValueError:
                 print("Error2-cant fetch")#print in console
@@ -276,8 +281,9 @@ def compute(request):#**** fn, to calculate req met or not, sum divide and compa
 '''
 Changes to be made: 
 ● Stylize few things
-● add a pop up button in inputsbase.html stating you have not met these requirements calories
-● learnmore button that will render to a page explaining the calculations
+● add a pop up button in inputsbase.html stating you have not met these requirements
+● Should update unitweight of each item
+● check buttons
 '''
 @login_required
 def suggester_view(request):

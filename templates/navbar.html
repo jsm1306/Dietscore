@@ -1,12 +1,16 @@
 {% load static %}
-<nav class="navbar navbar-light bg-light">
-</nav>
+
 <nav class="navbar navbar-expand-lg">
     <div class="container-fluid" id="navbarNav">
-        <ul class="navbar-nav">
-            <a class="navbar-link" href="{% url 'mains' %}">
+        <a class="navbar-brand" href="/">Diet Suggester</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarText">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <!-- <a class="navbar-link" href="{% url 'mains' %}">
                 <img src="{% static 'dicon.png' %}" width="30" height="30">
-            </a>
+            </a> -->
             <li class="nav-item active">
                 <a class="nav-link" href="{% url 'bmicalc' %}">BMI</a>
             </li>
@@ -21,7 +25,7 @@
             </li>
         </ul>
 
-        <ul class="navbar-nav ms-auto">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             {% if user.is_authenticated %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'user_history' %}"><u>{{ user.username }}</u></a>
@@ -33,4 +37,5 @@
             {% endif %}
         </ul>
     </div>
+</div>
 </nav>
