@@ -6,7 +6,7 @@
     <h3>{{ category }}</h3>
     <ul>
         {% for item in items %}
-            <li>{{ item.item_name }} - {{ item.price }} Rs</li>
+            <li>{{ item.item_name }}   ₹{{ item.price }} </li>
         {% empty %}
             <li>No items available in this category.</li>
         {% endfor %}
