@@ -3,9 +3,9 @@
 <form method="POST" action="">
     {% csrf_token %}
     <h1>Login</h1>
-    <p>Username:</p> <input type="text" name="username">
-    <p>Password:</p> <input type="password" name="password">
-    <button class="button button2">Submit</button><br>
+    <p>Username</p> <input type="text" name="username">
+    <p>Password</p> <input type="password" name="password">
+    <button class="button button2">Sign in</button><br>
     {% for message in messages %}
    <p1 id="messages">{{message}} </p1>
    {% endfor %}
