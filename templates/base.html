@@ -86,12 +86,12 @@
             background-color: rgb(255, 255, 255); 
         }  
         .button-container {
-    display: flex;
-    justify-content: space-between; /* Space between buttons */
-    align-items: center;
-    width: 100%; /* Full width container */
-    margin-top: 20px;
-}
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            width: 100%; 
+            margin-top: 20px;
+        }
         button{
             background: rgb(45,126,231,0.6);
             height: 40px;
@@ -105,26 +105,20 @@
             color: white;
 
         } 
-        input{
-            background: rgba(255,255,255,0.3);
-            height:40px;
+        input, select {
+            background: rgba(255, 255, 255, 0.1);
+            height: 40px;
             line-height: 40px;
-            border-radius: 30px;
+            border-radius: 5px;
             padding: 0px 20px;
-            border:none;
-            margin-bottom: 20px;
-            color:white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-bottom: 15px;
+            color: #ffffff;
         }
-        select{
-            background: rgba(255,255,255,0.3);
-            height:40px;
-            line-height: 40px;
-            border-radius: 30px;
-            padding: 0px 20px;
-            border:none;
-            margin-bottom: 20px;
-            color: rgba(255,255,255,0.6);
-            }
+    
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
         label{
             color: rgba(255,255,255,0.8);
             text-transform: uppercase;

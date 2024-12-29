@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+
 {% block content %}
 <h3>Nutrition Intake Summary:</h3>
 
@@ -81,26 +82,79 @@
         </tr>
     </tfoot>
 </table>
-<br>
 
-<a href="{% url 'score' %}">
-    <button type="button" class="btn custom-register-btn">← Go Back</button>
-</a>
 <div class="button-container">
-    <a href="{% url 'categorize' %}">
-        <button class="button button3">Try our Diet Suggester</button>
+    <a href="{% url 'score' %}">
+        <button type="button" class="btn btn-back">← Go Back</button>
     </a>
+
+    {% if not meets_requirements.Calories and not meets_requirements.Proteins and not meets_requirements.Fats and not meets_requirements.Sodium and not meets_requirements.Fiber and not meets_requirements.Carbs and not meets_requirements.Sugar %}
+        <a href="{% url 'categorize' %}">
+            <button class="btn btn-suggest">Try our Diet Suggester</button>
+        </a>
+    {% endif %}
 </div>
 
 <style>
-    .button3 {
-        background-color: #0057ba;
-        padding: 0px 40px;
-        font-size: 17px;
+    table {
+        margin: 20px auto;
+        width: 90%;
+        border-collapse: collapse;
+        text-align: center;
+    }
+
+    th, td {
+        border: 1px solid #ccc;
+        padding: 10px;
+    }
+
+    thead {
+        background-color: #f8f9fa;
+    }
+
+    tfoot th {
+        background-color: #e9ecef;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 30px;
+    }
+
+    .btn {
+        padding: 5px 20px;
+        font-size: 16px;
         border: none;
-        color: white;
+        border-radius: 5px;
         cursor: pointer;
-        width: 125%;
+    }
+
+    .btn-back {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .btn-back:hover {
+        background-color: #218838;
+    }
+
+    .btn-suggest {
+        background-color: #0057ba;
+        color: white;
+    }
+
+    .btn-suggest:hover {
+        background-color: #004085;
+    }
+
+    .status-yes {
+        color: #28a745;
+    }
+
+    .status-no {
+        color: #dc3545;
     }
 </style>
 
