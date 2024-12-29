@@ -8,6 +8,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import cache_control 
 
 
 def registerPage(request):
@@ -46,11 +47,12 @@ def logoutPage(request):
     logout(request)
     return redirect('login')
 
-
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='login')
 def mains(request):#dummy
     return render(request,'mains.html',{'result':'Diet Score'})
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='login')
 def category_wise_items(request):#to display categories in category.html(navbar)
     categories = Category.objects.all()
@@ -61,6 +63,7 @@ def category_wise_items(request):#to display categories in category.html(navbar)
     }
     return render(request, 'categorylist.html', context)
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='login')
 def add(request):
     if request.method == 'POST':
@@ -80,7 +83,7 @@ def add(request):
                 'nutrition_items': nutrition_items,
             })
     return render(request, 'mains.html')
-
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='login')
 def categorize(request):#to display items category wise
     items_by_category = {}
@@ -93,6 +96,7 @@ def categorize(request):#to display items category wise
     }
     return render(request, 'selectcategories.html', context)
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='login')
 def suggester(request):
     if request.method == "POST":
@@ -135,7 +139,7 @@ def suggester(request):
 
     return redirect('mains.html')
 
-
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='login')
 def score(request):#back button fn in inputsbase.html
     name = request.session.get('name')  
@@ -146,6 +150,8 @@ def score(request):#back button fn in inputsbase.html
         'age': age,
         'nutrition_items': nutrition_items,
     })
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='login')
 def bmicalc(request):#bmi calculator
     if request.method == "POST":
@@ -205,7 +211,7 @@ def daily(request):#this fn is to determine the min requirements based on age&ge
     for age_range, requirements in DAILY_REQUIREMENTS.get(gender, {}).items():
         if age_range[0] <= age <= age_range[1]:
             return requirements
-    return {}  
+    return {} 
 
 def load_nutrition_data():# this fn is to load the nutrition data of items and use in compute fn
     nutrition_data = {}
@@ -223,6 +229,7 @@ def load_nutrition_data():# this fn is to load the nutrition data of items and u
         }
     return nutrition_data
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required
 def compute(request):#**** fn, to calculate req met or not, sum divide and compare
     if request.method == 'POST':
@@ -285,6 +292,7 @@ Changes to be made:
 ● Should update unitweight of each item
 ● check buttons
 '''
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required
 def suggester_view(request):
     if request.method == 'POST':
@@ -298,6 +306,7 @@ def suggester_view(request):
 
         return render(request, 'suggestresult.html', {'results': selected_items})
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required
 def user_history(request):
     user_submissions = UserSubmission.objects.filter(user=request.user).prefetch_related('items')
@@ -306,6 +315,8 @@ def user_history(request):
         'submissions': user_submissions,
     }
     return render(request, 'user_history.html', context)
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required
 def moreinfo(request):
     return render(request,'optimzerinfo.html')
