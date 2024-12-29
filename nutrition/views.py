@@ -160,7 +160,7 @@ def bmicalc(request):#bmi calculator
         age = int(request.POST.get('age', 0))
         gender = request.POST.get('options', '')
         if height<=0 or weight<=0:
-            errormsg="Height/Weight should be above zero. Please enter valid inputs."
+            errormsg="Height/Weight should be positive numbers. Please enter valid inputs."
             return render(request, 'bmiresult.html', {'error': errormsg, 'age': age, 'gender': gender})
         if age<0 or age >100:
             errormsg="Invalid age."
