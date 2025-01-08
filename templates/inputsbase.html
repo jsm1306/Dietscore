@@ -88,7 +88,7 @@
         <button type="button" class="btn btn-back">← Go Back</button>
     </a>
 
-    {% if not meets_requirements.Calories and not meets_requirements.Proteins and not meets_requirements.Fats and not meets_requirements.Sodium and not meets_requirements.Fiber and not meets_requirements.Carbs and not meets_requirements.Sugar %}
+    {% if not meets_requirements.Calories or not meets_requirements.Proteins or not meets_requirements.Fats or not meets_requirements.Sodium or not meets_requirements.Fiber or not meets_requirements.Carbs or not meets_requirements.Sugar %}
         <a href="{% url 'categorize' %}">
             <button class="btn btn-suggest">Try our Diet Suggester</button>
         </a>
