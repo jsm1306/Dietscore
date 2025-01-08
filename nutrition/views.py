@@ -73,6 +73,7 @@ def add(request):
             gender=request.POST.get('options', '')
             request.session['age'] = age
             request.session['gender'] = gender
+            request.session['name'] = username
 
             nutrition_items = NutritionInfo.objects.values_list('item_name', flat=True)
 
@@ -143,11 +144,14 @@ def suggester(request):
 @login_required(login_url='login')
 def score(request):#back button fn in inputsbase.html
     name = request.session.get('name')  
-    age = request.session.get('age')     
+    age = request.session.get('age')    
+    username = request.session.get('username') 
+    # print(name, age, username)
     nutrition_items = NutritionInfo.objects.values_list('item_name', flat=True)
     return render(request, 'score.html', {
         'name': name,
         'age': age,
+        'username': username,
         'nutrition_items': nutrition_items,
     })
 
@@ -309,7 +313,7 @@ def suggester_view(request):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required
 def user_history(request):
-    user_submissions = UserSubmission.objects.filter(user=request.user).prefetch_related('items')
+    user_submissions = UserSubmission.objects.filter(user=request.user).prefetch_related('items').order_by('-submitted_at')
     
     context = {
         'submissions': user_submissions,
