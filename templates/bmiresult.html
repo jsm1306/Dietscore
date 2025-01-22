@@ -1,4 +1,6 @@
+
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
 <form>
     {% if error %}
@@ -12,6 +14,11 @@
         <p>Category: {{ category }}</p>
     {% endif %}
 </form>
+<h1 style="color:black; font-weight: bold;"> Height vs Weight for Gender</h1>
+<div style="text-align: center;">
+    <img src="{% static 'hwtchart.png' %}" alt="BMI" style="width: 65%; height: 65%;">
+</div></div>
+
 {% endblock %}
 
 
