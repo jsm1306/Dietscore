@@ -34,7 +34,27 @@
                 <button class="button button2">Submit</button><br>
             </div>
         </form>
-    
+        <br>
+        <div class="welcome-box">
+            <h2 style="color:#042a24; text-align: left;">Quantity per serving:</h2>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>Item Name</th>
+                <th>Unit Weight (g)</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in nutrition_items %}
+            <tr>
+                <td>{{ item.item_name }}</td>
+                <td>{{ item.unit_weight }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </table>
 </div>
 
 <script>

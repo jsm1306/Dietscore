@@ -75,7 +75,7 @@ def add(request):
             request.session['gender'] = gender
             request.session['name'] = username
 
-            nutrition_items = NutritionInfo.objects.values_list('item_name', flat=True)
+            nutrition_items = NutritionInfo.objects.all()
 
             return render(request, 'score.html', {
                 'age': age,
