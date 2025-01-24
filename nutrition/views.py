@@ -101,6 +101,7 @@ def categorize(request):#to display items category wise
 @login_required(login_url='login')
 def suggester(request):
     if request.method == "POST":
+        latest = UserSubmission.objects.filter(user=request.user).prefetch_related('items').order_by('-submitted_at').first()
         selected_items = []
         for category, items in request.POST.items():
             if category.startswith('item_'):
@@ -136,7 +137,7 @@ def suggester(request):
  
         results = [(item, quantity,item.price) for item, quantity in zip(nutrition_data, quantities)]
 
-        return render(request, 'suggestresult.html', {'results': results})
+        return render(request, 'suggestresult.html', {'results': results, 'latestsub': latest})
 
     return redirect('mains.html')
 
