@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
     <h3>Have a look at your optimized diet quantities:</h3>
-    <table bgcolor="gray">
+    <table id="dietTable" bgcolor="gray">
         <th>Item</th><th>Quantity (in g)</th><th>Price (per 100g)</th><th>Image</th>
         {% for item, quantity, price in results %}
         <tr>
@@ -18,47 +18,152 @@
         </tr>
         {% endfor %}
     </table>
-    
+
+    <h3>Quantity Distribution</h3>
+    <canvas id="quantityChart" width="400" height="400"></canvas>
+
+    <button style="background-color: #0057ba;
+" onclick="downloadPDF()">Download PDF Report</button>
+
     <div class="button-container">
         <a href="{% url 'categorize' %}"><button type="button" class="button button3">←Tryout more suggestions</button></a>
         <a href="{% url 'moreinfo' %}">Learn More about calculations</a>
         <a href="{% url 'logout' %}"><button type="button" class="btn btn-success">Logout</button></a>
     </div>
-<style>
-    .button-container {
-        display: flex;
-        justify-content: space-between; 
-        align-items: center;
-        width: 100%;
-        margin-top: 20px;
-    }
 
-    .button-container a {
-        flex-grow: 1; 
-        text-align: center; 
-    }
+    <style>
+        .button-container {
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            width: 100%;
+            margin-top: 20px;
+        }
 
-    .button-container a:nth-child(1) {
-        text-align: left; 
-        
-    }
+        .button-container a {
+            flex-grow: 1; 
+            text-align: center; 
+        }
 
-    .button-container a:nth-child(2) {
-        text-align: center; 
-    }
+        .button-container a:nth-child(1) {
+            text-align: left; 
+        }
 
-    .button-container a:nth-child(3) {
-        text-align: right; 
-    }
+        .button-container a:nth-child(2) {
+            text-align: center; 
+        }
 
-    .button3 {
-        background-color: #0057ba;
-        padding: 0px 40px;
-        font-size: 16px;
-        border: none;
-        color: white;
-        cursor: pointer;
-        width: 70%;
-    }
-</style>
+        .button-container a:nth-child(3) {
+            text-align: right; 
+        }
+
+        .button3 {
+            background-color: #0057ba;
+            padding: 0px 40px;
+            font-size: 16px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            width: 70%;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.26/jspdf.plugin.autotable.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var canvas = document.getElementById('quantityChart');
+            var ctx = canvas.getContext('2d');
+
+            canvas.style.width = '500px';
+            canvas.style.height = '500px';
+
+            var data = {
+                labels: [
+                    {% for item, quantity, price in results %}
+                        "{{ item.item_name }}"
+                        {% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ],
+                datasets: [{
+                    data: [
+                        {% for item, quantity, price in results %}
+                            {{ quantity|floatformat:2 }}
+                            {% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    ],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.999)',
+                        'rgba(54, 162, 235, 0.999)',
+                        'rgba(255, 206, 86, 0.999)',
+                        'rgba(75, 192, 192, 0.999)',
+                        'rgba(153, 102, 255, 0.999)',
+                        'rgba(255, 159, 64, 0.999)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 132, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            };
+
+            var quantityChart = new Chart(ctx, {
+                type: 'pie',
+                data: data,
+                options: {
+                    responsive: false, 
+                    maintainAspectRatio: false, 
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (tooltipItem) {
+                                    return tooltipItem.label + ': ' + tooltipItem.raw + ' g';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        async function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            var doc = new jsPDF();
+            const date = new Date();
+            const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear().toString().slice(-2)}`;
+            doc.setFontSize(16);
+            doc.text('Report generated on: ' + new Date().toLocaleString(), 20, 280);
+
+            doc.text('Optimized Diet Report', 20, 10);
+
+            var table = document.getElementById("dietTable");
+            var tableData = [];
+            for (var i = 1, row; row = table.rows[i]; i++) {
+                var rowData = [];
+                for (var j = 0, col; col = row.cells[j]; j++) {
+                    rowData.push(col.innerText.trim());
+                }
+                tableData.push(rowData);
+            }
+            doc.autoTable({ head: [['Item', 'Quantity (g)', 'Price (per 100g)']], body: tableData });
+
+            var canvas = document.getElementById('quantityChart');
+            var dataUrl = canvas.toDataURL('image/png');
+            doc.addImage(dataUrl, 'PNG', 20, 100, 150, 150);
+
+            doc.setFontSize(10);
+
+            doc.save(`${formattedDate}_diet_report.pdf`);
+        }
+    </script>
 {% endblock %}
