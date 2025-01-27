@@ -27,6 +27,7 @@
             {% endfor %}
         </tbody>
     </table>
+    <!-- <p style="color: black;">Debug Data: {{ latestsub }}</p -->
 
     <h3>Quantity Distribution</h3>
     <canvas id="quantityChart" width="400" height="400"></canvas>
@@ -80,7 +81,7 @@
         }
 
         .button-danger {
-            background-color: #19b528;
+            background-color: 	#b23b3b;
         }
 
         table {
@@ -103,15 +104,14 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.26/jspdf.plugin.autotable.min.js"></script>
-
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var canvas = document.getElementById('quantityChart');
             var ctx = canvas.getContext('2d');
-
+    
             canvas.style.width = '500px';
             canvas.style.height = '500px';
-
+    
             var data = {
                 labels: [
                     {% for item, quantity, price in results %}
@@ -145,13 +145,13 @@
                     borderWidth: 1
                 }]
             };
-
+    
             var quantityChart = new Chart(ctx, {
                 type: 'pie',
                 data: data,
                 options: {
-                    responsive: false, 
-                    maintainAspectRatio: false, 
+                    responsive: false,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
                             position: 'top',
@@ -167,35 +167,69 @@
                 }
             });
         });
-
+    
         async function downloadPDF() {
             const { jsPDF } = window.jspdf;
             var doc = new jsPDF();
             const date = new Date();
             const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear().toString().slice(-2)}`;
             doc.setFontSize(16);
-            doc.text('Report generated on: ' + new Date().toLocaleString(), 20, 280);
+            doc.text('Report generated on: ' + new Date().toLocaleString(), 20, 280);    
+            
+            // Table 2: Input Food
+            doc.setFontSize(16);
+            doc.text('Your Food intake today:', 20, 20);
+    
+            var inputFoodData = [];
+            {% if latestsub %}
+                {% for item_entry in latestsub.items.all %}
+                    inputFoodData.push([
+                        "{{ item_entry.item_name|title }}",
+                        "{{ item_entry.quantity }}",
+                        "{{ item_entry.calories }}",
+                        "{{ item_entry.proteins }}",
+                        "{{ item_entry.fats }}",
+                        "{{ item_entry.sodium }}",
+                        "{{ item_entry.fiber }}",
+                        "{{ item_entry.carbs }}",
+                        "{{ item_entry.sugar }}"
+                    ]);
+                {% endfor %}
+            {% endif %}
+    
+            doc.autoTable({
+                head: [['Item Name', 'Quantity (g)', 'Calories', 'Proteins', 'Fats', 'Sodium', 'Fiber', 'Carbs', 'Sugar']],
+                body: inputFoodData,
+                startY: 30
+            });
+            doc.addPage();
+            doc.setFontSize(16);
+            doc.text('Optimized Diet Report:', 20, 20);
 
-            doc.text('Optimized Diet Report', 20, 10);
-
-            var table = document.getElementById("dietTable");
-            var tableData = [];
-            for (var i = 1, row; row = table.rows[i]; i++) {
+            var table1 = document.getElementById("dietTable");
+            var table1Data = [];
+            for (var i = 1, row; row = table1.rows[i]; i++) {
                 var rowData = [];
                 for (var j = 0, col; col = row.cells[j]; j++) {
                     rowData.push(col.innerText.trim());
                 }
-                tableData.push(rowData);
+                table1Data.push(rowData);
             }
-            doc.autoTable({ head: [['Item', 'Quantity (g)', 'Price (per 100g)']], body: tableData });
-
+            doc.autoTable({ 
+                head: [['Item', 'Quantity (g)', 'Price (per 100g)']], 
+                body: table1Data,
+                startY: 20
+            });
+    
+    
+            doc.addPage();
             var canvas = document.getElementById('quantityChart');
             var dataUrl = canvas.toDataURL('image/png');
-            doc.addImage(dataUrl, 'PNG', 20, 100, 150, 150);
-
-            doc.setFontSize(10);
-
+            if (doc.internal.getNumberOfPages() === 1) {
+            doc.addPage(); // New page for the chart if not enough space
+        }
+            doc.addImage(dataUrl, 'PNG', 20, 20, 150, 150);
             doc.save(`${formattedDate}_diet_report.pdf`);
         }
     </script>
-{% endblock %}
+    {% endblock %}
