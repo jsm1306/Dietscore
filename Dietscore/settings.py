@@ -83,7 +83,6 @@ from urllib.parse import urlparse
 
 load_dotenv()
 
-# Replace the DATABASES section of your settings.py with this
 tmpPostgres = urlparse(os.getenv("DATABASE_URL"))
 DATABASES = {
 #  'default': {
