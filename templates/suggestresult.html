@@ -2,69 +2,101 @@
 {% block content %}
     <h3>Have a look at your optimized diet quantities:</h3>
     <table id="dietTable" bgcolor="gray">
-        <th>Item</th><th>Quantity (in g)</th><th>Price (per 100g)</th><th>Image</th>
-        {% for item, quantity, price in results %}
-        <tr>
-            <td>{{ item.item_name }}</td>
-            <td>{{ quantity|floatformat:2 }} g</td>  
-            <td>₹ {{ price }}</td>
-            <td>
-                {% if item.image %}
-                    <img src="{{ item.image.url }}" alt="{{ item.item_name }}" style="width: 100px; height: 100px;">
-                {% else %}
-                    No image available
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantity (in g)</th>
+                <th>Price (per 100g)</th>
+                <th>Image</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item, quantity, price in results %}
+            <tr>
+                <td>{{ item.item_name }}</td>
+                <td>{{ quantity|floatformat:2 }} g</td>  
+                <td>₹ {{ price }}</td>
+                <td>
+                    {% if item.image %}
+                        <img src="{{ item.image.url }}" alt="{{ item.item_name }}" style="width: 100px; height: 100px;">
+                    {% else %}
+                        No image available
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
 
     <h3>Quantity Distribution</h3>
     <canvas id="quantityChart" width="400" height="400"></canvas>
 
-    <button style="background-color: #0057ba;
-" onclick="downloadPDF()">Download PDF Report</button>
-
     <div class="button-container">
-        <a href="{% url 'categorize' %}"><button type="button" class="button button3">←Tryout more suggestions</button></a>
-        <a href="{% url 'moreinfo' %}">Learn More about calculations</a>
-        <a href="{% url 'logout' %}"><button type="button" class="btn btn-success">Logout</button></a>
+        <button class="button button-primary" onclick="downloadPDF()">Download PDF Report</button><br><br>
+        </div>
+        <div class="buttons">
+        <a href="{% url 'categorize' %}"><button type="button" class="button button-secondary">← Try more</button></a>
+        <a href="{% url 'moreinfo' %}"><button type="button" class="button button-secondary">Learn More</button></a>
+        <a href="{% url 'logout' %}"><button type="button" class="button button-danger">Logout</button></a>
     </div>
 
     <style>
-        .button-container {
+        .buttons{
             display: flex;
-            justify-content: space-between; 
-            align-items: center;
-            width: 100%;
+            justify-content: space-between;
             margin-top: 20px;
         }
-
-        .button-container a {
-            flex-grow: 1; 
-            text-align: center; 
+        canvas{
+            background-color: #ffffff; display:flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between; 
+            align-items: center;
+            width: 30%;
+            margin-top: 20px;
+            gap: 10px;
         }
 
-        .button-container a:nth-child(1) {
-            text-align: left; 
-        }
-
-        .button-container a:nth-child(2) {
-            text-align: center; 
-        }
-
-        .button-container a:nth-child(3) {
-            text-align: right; 
-        }
-
-        .button3 {
-            background-color: #0057ba;
-            padding: 0px 40px;
+        .button {
+            padding: 0px 20px;
             font-size: 16px;
             border: none;
             color: white;
             cursor: pointer;
-            width: 70%;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .button-primary {
+            background-color: #0057ba;
+        }
+
+        .button-secondary {
+            background-color: #6c757d;
+        }
+
+        .button-danger {
+            background-color: #19b528;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
         }
     </style>
 

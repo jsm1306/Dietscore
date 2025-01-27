@@ -77,14 +77,28 @@ WSGI_APPLICATION = 'Dietscore.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+import os
 from dotenv import load_dotenv
+from urllib.parse import urlparse
 
 load_dotenv()
+
+# Replace the DATABASES section of your settings.py with this
+tmpPostgres = urlparse(os.getenv("DATABASE_URL"))
 DATABASES = {
- 'default': {
- 'ENGINE': 'django.db.backends.sqlite3',
- 'NAME': BASE_DIR / 'db.sqlite3',
- }
+#  'default': {
+#  'ENGINE': 'django.db.backends.sqlite3',
+#  'NAME': BASE_DIR / 'db.sqlite3',
+#  }
+    'default': {
+    'ENGINE': os.getenv('db_engine', 'django.db.backends.postgresql'),
+    'NAME': os.getenv('db_name'),
+    'USER': os.getenv('db_user'),
+    'PASSWORD': os.getenv('db_password'),
+    'HOST': os.getenv('db_host'),
+    'PORT': os.getenv('db_port', '5432'),
+    'OPTIONS': {'sslmode': 'require', 'options': 'endpoint=ep-shrill-bird-a9f8bhoa',},
+  }
 }
 
 # Password validation
@@ -133,3 +147,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Add these at the top of your settings.py
+
